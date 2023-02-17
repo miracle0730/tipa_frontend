@@ -1,0 +1,12 @@
+<div class="card shadow-sm" *ngIf="category">
+  <ng-container>
+    <img class="card-img-top" *ngIf="categoryLogo" [src]="categoryLogo?.url" alt="Category image">
+    <div class="card-img-top no-image" *ngIf="!categoryLogo">
+      <i class="fas fa-image"></i>
+    </div>
+  </ng-container>
+
+  <div class="card-body">
+    <h4 class="card-title text-center">{{category?.title}}</h4>
+  </div>
+</div>

@@ -1,0 +1,104 @@
+<div *ngIf="applicationInfo">
+  <div class="row section">
+    <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12">
+      <app-preview-images [images]="applicationInfo.images"></app-preview-images>
+    </div>
+    <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12">
+      <div class="title">
+        <h2>{{applicationTypeInfo?.title || ''}} {{productInfo?.title || ''}}</h2>
+      </div>
+      <div class="stage-block" [ngStyle]="{'background-color': 'var(--info)', 'margin-top': '15px'}">Fast Track</div>
+      <div class="description">
+        <h5>Description</h5>
+        <p class="text_with_enter" [innerHTML]="applicationInfo.description"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row section">
+    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="packOrReelInfo?.title">
+      <h5>Packaging/Reel</h5>
+      <p>{{packOrReelInfo?.title}}</p>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo?.application">
+      <h5>Application</h5>
+      <p>{{applicationInfo?.application | displayCategoryById | async}}</p>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo?.segment?.length">
+      <h5>Segment</h5>
+      <p>{{applicationInfo?.segment | getPacketGoods | async}}</p>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo?.segment_type?.length">
+      <h5>Sub Segment</h5>
+      <p>{{applicationInfo?.segment_type | getPacketGoods | async}}</p>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo?.packed_goods?.length">
+      <h5>Packed goods:</h5>
+      <p>{{applicationInfo?.packed_goods | getPacketGoods | async}}</p>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+      <h5>Printing Options:</h5>
+      <p>1-9 colors</p>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo?.fast_track?.production_site">
+      <h5>TIPA Production Site:</h5>
+      <p>{{applicationInfo?.fast_track?.production_site}}</p>
+    </div>
+  </div>
+
+  <div class="row section overflow-auto">
+    <h5 class="col-12">Dimensions Available</h5>
+
+    <table class="table table-items">
+      <thead>
+        <tr>
+          <th scope="col">
+            <div>Fast Track</div>
+            <div>Short code</div>
+          </th>
+          <th scope="col">Width (mm)</th>
+          <th scope="col">Height (mm)</th>
+          <th scope="col">Flap (mm)</th>
+          <th scope="col">Gusset (mm)</th>
+          <th scope="col" class="col-moqThi">
+            <div class="full-height">
+              <div>MOQ per thickness</div>
+              <tr *ngIf="groupedFtItems?.length">
+                <th scope="col" *ngFor="let itemMoq of groupedFtItems[0].moqPerThickness">{{itemMoq.thickness}}</th>
+              </tr>
+            </div>
+          </th>
+          <th scope="col">Dieline</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="groupedFtItems?.length">
+        <tr *ngFor="let item of groupedFtItems">
+          <td>{{item.shortCode}}</td>
+          <td>{{(item?.width) ? item?.width : 'N/A'}}</td>
+          <td>{{(item?.height) ? item?.height : 'N/A'}}</td>
+          <td>{{(item?.flap) ? item?.flap : 'N/A'}}</td>
+          <td>{{(item?.gusset) ? item?.gusset : 'N/A'}}</td>
+          <td class="col-moqThi">
+            <div class="full-height">
+              <tr *ngIf="item?.moqPerThickness?.length">
+                <td *ngFor="let itemMoq of item.moqPerThickness">{{(itemMoq?.moq) ? (itemMoq.moq | number:'1.0') : 'N/A'}}</td>
+              </tr>
+            </div>
+          </td>
+          <td>
+            <div class="dieline" *ngIf="item?.dielineUrl; else naContent">
+              <div class="dieline-title">Dieline</div>
+              <div class="dieline-file">
+                <i class="fas fa-file-pdf"></i>
+                <a [href]="item?.dielineUrl" target="_blank">Download</a>
+              </div>
+            </div>
+            <ng-template #naContent>N/A</ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="col-12 text-center" *ngIf="!groupedFtItems?.length">There are no Fast Track Items</div>
+  </div>
+</div>

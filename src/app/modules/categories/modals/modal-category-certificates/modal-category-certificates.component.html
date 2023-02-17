@@ -1,0 +1,136 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{(editCategory) ? 'Edit' : 'Add'}} category</h5>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="categoryForm">
+      <div class="form-group" *ngIf="categoryForm.get('title')">
+        <label>Title *</label>
+        <input type="text" class="form-control" placeholder="Enter title" formControlName="title"
+          [ngClass]="categoryForm.get('title').touched && categoryForm.get('title').errors ? 'is-invalid' : ''">
+        <div class="invalid-feedback" *ngIf="categoryForm.get('title').hasError('required')">Title is required</div>
+      </div>
+
+      <div formGroupName="metadata" *ngIf="getMetadata">
+        <div class="form-group" *ngIf="getMetadata.get('certificate_type')">
+          <label>Certificate type *</label>
+          <ng-multiselect-dropdown class="custom-multiselect" placeholder="Certificate type"
+            [settings]="singleDropdownSettings" [data]="certificateTypeList" formControlName="certificate_type"
+            [ngClass]="{
+              'multiselect-invalid': getMetadata.get('certificate_type').invalid && (getMetadata.get('certificate_type').touched || getMetadata.get('certificate_type').dirty)
+            }">
+          </ng-multiselect-dropdown>
+          <div class="invalid-multiselect-message" *ngIf="getMetadata.get('certificate_type').invalid && (getMetadata.get('certificate_type').touched || getMetadata.get('certificate_type').dirty)">Certificate type is required</div>
+        </div>
+
+        <div class="form-group" *ngIf="getMetadata.get('certificate_logo')" formGroupName="certificate_logo">
+          <label>Certificate icon (200x100px) *</label>
+          <app-edit-images [singleImage]="true" [images]="getMetadata.get('certificate_logo').get('oldImages').value" (addFile)="certificateLogoEvent($event)"></app-edit-images>
+          <div class="invalid-multiselect-message" *ngIf="getMetadata.get('certificate_logo').invalid && (getMetadata.get('certificate_logo').touched || getMetadata.get('certificate_logo').dirty)">Certificate icon is required</div>
+        </div>
+
+        <div class="form-group" *ngIf="getMetadata.get('certificate_available_for')">
+          <label>Available for</label>
+          <ng-multiselect-dropdown class="custom-multiselect" placeholder="Available for"
+            [settings]="multiDropdownSettings" [data]="certificateAvailableForList" formControlName="certificate_available_for">
+          </ng-multiselect-dropdown>
+        </div>
+
+        <div class="form-group" *ngIf="getMetadata.get('certificate_certified_by')">
+          <label>Certified By *</label>
+          <ng-multiselect-dropdown class="custom-multiselect" placeholder="Certified By"
+            [settings]="singleDropdownSettings" [data]="certificateCertifiedByList" formControlName="certificate_certified_by"
+            [ngClass]="{
+              'multiselect-invalid': getMetadata.get('certificate_certified_by').invalid && (getMetadata.get('certificate_certified_by').touched || getMetadata.get('certificate_certified_by').dirty)
+            }">
+          </ng-multiselect-dropdown>
+          <div class="invalid-multiselect-message" *ngIf="getMetadata.get('certificate_certified_by').invalid && (getMetadata.get('certificate_certified_by').touched || getMetadata.get('certificate_certified_by').dirty)">Certified By is required</div>
+        </div>
+
+        <div class="row form-group" *ngIf="getMetadata.get('certificate_file')">
+          <div class="col-6">Upload Certificate file</div>
+          <div class="col-6">
+            <div class="button-pdf-upload">
+              <ng-container *ngIf="!getMetadata.get('certificate_file').value">
+                <div class="file">
+                  <label class="add-file" for="certificate_file">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>+ Add file</span>
+                  </label>
+                  <input id="certificate_file" type="file" accept="application/pdf" (change)="getMetadata.get('certificate_file').setValue($event.target.files[0])">
+                </div>
+              </ng-container>
+              <ng-container *ngIf="getMetadata.get('certificate_file').value">
+                <div class="file">
+                  <a>{{getMetadata.get('certificate_file').value?.name ? getMetadata.get('certificate_file').value?.name : getMetadata.get('certificate_file').value?.id}}</a>
+                  <i class="fas fa-trash-alt" (click)="getMetadata.get('certificate_file').setValue('')"></i>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+
+        <div class="row form-group" *ngIf="getCertificateGraphicsArray" formArrayName="certificate_graphics">
+          <div class="col-6">Upload Logos for Graphics</div>
+          <div class="col-6">
+            <div class="row" *ngFor="let control of getCertificateGraphicsArray.controls; let index = index" [formGroupName]="index">
+              <div class="col">
+                <div class="button-pdf-upload">
+                  <ng-container *ngIf="!control.get('file').value">
+                    <div class="file">
+                      <label class="add-file" [for]="'certificate_graphics-file-' + index">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>+ Add file</span>
+                      </label>
+                      <input [id]="'certificate_graphics-file-' + index" type="file" (change)="control.get('file').setValue($event.target.files[0])">
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="control.get('file').value">
+                    <div class="file">
+                      <a>{{control.get('file').value?.name ? control.get('file').value?.name : control.get('file').value?.id}}</a>
+                      <i class="fas fa-trash-alt" (click)="control.get('file').setValue('')"></i>
+                    </div>
+                  </ng-container>
+                </div>
+                
+                <div class="button-pdf-upload">
+                  <ng-container *ngIf="!control.get('preview_image').value">
+                    <div class="file">
+                      <label class="add-file" [for]="'certificate_graphics-preview_image-' + index">
+                        <i class="fas fa-image"></i>
+                        <span>+ Add Preview Image</span>
+                      </label>
+                      <input [id]="'certificate_graphics-preview_image-' + index" type="file" accept="image/*" (change)="control.get('preview_image').setValue($event.target.files[0])">
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="control.get('preview_image').value">
+                    <div class="file">
+                      <a>{{control.get('preview_image').value?.name ? control.get('preview_image').value?.name : control.get('preview_image').value?.id}}</a>
+                      <i class="fas fa-trash-alt" (click)="control.get('preview_image').setValue('')"></i>
+                    </div>
+                  </ng-container>
+                </div>
+
+                <hr *ngIf="getCertificateGraphicsArray.controls.length > 1">
+              </div>
+              <div class="col-auto align-self-center" *ngIf="getCertificateGraphicsArray.controls.length > 1">
+                <i class="fas fa-trash-alt" (click)="removeCertificateGraphicsItem(index)"></i>
+              </div>
+            </div>
+            <div class="row justify-content-end">
+              <div class="col-auto">
+                <i class="fas fa-plus" (click)="addCertificateGraphicsItem()"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeModal()">Close</button>
+    <button type="button" class="btn btn-info" [disabled]="categoryForm.invalid" (click)="save()">{{(editCategory) ? 'Edit' : 'Add'}} category</button>
+  </div>
+</div>

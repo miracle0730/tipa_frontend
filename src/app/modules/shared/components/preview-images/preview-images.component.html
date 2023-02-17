@@ -1,0 +1,31 @@
+<div class="preview-block">
+  <ng-container [ngTemplateOutlet]="images.length === 0 ? noImages : (images.length > 1 ? multipleImages : oneImage)">
+  </ng-container>
+</div>
+
+<ng-template #noImages>
+  <div class="no-images">
+    <i class="fas fa-image fa-5x"></i>
+    <h4>There are no any images</h4>
+  </div>
+</ng-template>
+
+<ng-template #oneImage>
+  <div class="one-image">
+    <app-gallery [images]="[images[0].url]"></app-gallery>
+    <!--    <img [src]="images[0].url" alt="">-->
+  </div>
+</ng-template>
+
+<ng-template #multipleImages>
+  <div class="multiple-images">
+    <div class="preview-image">
+      <app-gallery [images]="[previewImage]"></app-gallery>
+      <!--      <img [src]="previewImage" alt="">-->
+    </div>
+
+    <div class="next-images">
+      <img *ngFor="let image of images" [src]="image.url" (click)="previewImageEvent(image)">
+    </div>
+  </div>
+</ng-template>

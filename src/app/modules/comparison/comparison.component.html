@@ -1,0 +1,196 @@
+<app-header></app-header>
+<div class="main-content">
+  <app-side-navigation class="c-sidebar c-sidebar-dark" appHideSideMenu></app-side-navigation>
+
+  <div class="compare-container">
+    <div class="card" *ngIf="comparedApplications.length > 0">
+      <div class="card-header">
+        Comparison table
+      </div>
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th></th>
+              <th *ngFor="let application of comparedApplications; let i = index">
+                <div class="application-header">
+                  <h4 *ngIf="categoryList.length > 0">
+                    <ng-container *ngIf="getApplicationTypeInfo(application.type) as applicationTypeInfo">
+                      {{applicationTypeInfo.title}}
+                    </ng-container>
+                  </h4>
+                  <i class="fas fa-trash" (click)="deleteCompareApplication(application.id, i)"></i>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div id="compare-col">
+                  <i class="fas fa-balance-scale fa-3x"></i>
+                  <h3>Comparison</h3>
+                </div>
+              </td>
+              <td *ngFor="let application of comparedApplications">
+                <img [src]="application.images.length > 0 && application.images[0].url ? application.images[0].url : ''" alt="">
+              </td>
+            </tr>
+            <tr>
+              <td>Stage</td>
+              <td *ngFor="let application of comparedApplications">
+                <ng-container *ngIf="getStageInfo(application.stage) as stageInfo">
+                  <div class="stage-block" [ngStyle]="{'background-color': 'var(' + stageInfo.color + ')'}">{{stageInfo.title}}</div>
+                </ng-container>
+              </td>
+            </tr>
+            <tr>
+              <td>Width (min - max)</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="td-item application-description" *ngFor="let width of application.width | sortBy:[true]:['stage']">
+                  <app-stage-color-picker [stage]="width.stage" disabled="true"></app-stage-color-picker>
+                  <span> {{width.min}} - {{width.max}} mm</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Height (min - max)</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="td-item application-description" *ngFor="let height of application.height | sortBy:[true]:['stage']">
+                  <app-stage-color-picker [stage]="height.stage" disabled="true"></app-stage-color-picker>
+                  <span> {{height.min}} - {{height.max}} mm</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Thickness</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="td-item" *ngFor="let thickness of application.thickness | sortBy:[true]:['stage']">
+                  <app-stage-color-picker [stage]="thickness.stage" disabled="true"></app-stage-color-picker>
+                  <span>
+                    <ng-container *ngFor="let value of thickness.values | sortBy; let last = last;">
+                      {{value}}<ng-container *ngIf="!last">, </ng-container>
+                    </ng-container>
+                    &mu;
+                  </span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Sub Segment</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description">{{application.segment_type | getPacketGoods | async}}</div>
+              </td>
+            </tr>
+            <tr>
+              <td>Packed goods</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description">
+                  {{application.packed_goods.length > 0 ? (application.packed_goods | getPacketGoods | async) : '-'}}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Technical considerations</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description" [innerHTML]="(application && application.technical_considerations) ? application.technical_considerations.description : '-'"></div>
+              </td>
+            </tr>
+            <tr>
+              <td>Features</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description">{{application.features ? application.features : '-'}}</div>
+                <ng-container *ngIf="additionalFeaturesList.length > 0 && additionalFeaturesNestedList.length > 0">
+                  <ng-container *ngFor="let additionalFeatures of application.additional_features | sortBy:[true]:['stage']">
+                    <div *ngIf="additionalFeatures.mandatory && getAdditionalFeaturesByIdList(additionalFeatures.ids) as additionalFeaturesParentsList">
+                      <div class="additionalFeatures-item" *ngIf="additionalFeaturesParentsList.length">
+                        <app-stage-color-picker [stage]="additionalFeatures.stage" disabled="true"></app-stage-color-picker>
+                        <div class="item-tree">
+                          <div *ngFor="let parent of additionalFeaturesParentsList">
+                            <div class="parent">{{parent.title}}</div>
+                            <ul>
+                              <li *ngFor="let featureItem of getAdditionalFeaturesNestedList(parent.id, additionalFeatures.ids)">{{featureItem.title}}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </td>
+            </tr>
+            <tr>
+              <td>Additional Features</td>
+              <td *ngFor="let application of comparedApplications">
+                <ng-container *ngIf="additionalFeaturesList.length > 0 && additionalFeaturesNestedList.length > 0">
+                  <ng-container *ngFor="let additionalFeatures of application.additional_features | sortBy:[true]:['stage']">
+                    <div *ngIf="!additionalFeatures.mandatory && getAdditionalFeaturesByIdList(additionalFeatures.ids) as additionalFeaturesParentsList">
+                      <div class="additionalFeatures-item" *ngIf="additionalFeaturesParentsList.length">
+                        <app-stage-color-picker [stage]="additionalFeatures.stage" disabled="true"></app-stage-color-picker>
+                        <div class="item-tree">
+                          <div *ngFor="let parent of additionalFeaturesParentsList">
+                            <div class="parent">{{parent.title}}</div>
+                            <ul>
+                              <li *ngFor="let featureItem of getAdditionalFeaturesNestedList(parent.id, additionalFeatures.ids)">{{featureItem.title}}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
+              </td>
+            </tr>
+            <tr>
+              <td class="color-warning">Terms and Limitations</td>
+              <td *ngFor="let application of comparedApplications">
+                <div *ngIf="application.terms_and_limitations" [innerHTML]="application.terms_and_limitations"></div>
+              </td>
+            </tr>
+            <tr>
+              <td>Production process</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description">
+                  {{application.production_process ? application.production_process : '-'}}</div>
+              </td>
+            </tr>
+            <tr>
+              <td>Production site</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description">
+                  {{application.tipa_production_site ? application.tipa_production_site : '-'}}</div>
+              </td>
+            </tr>
+            <tr>
+              <td>Positive experiments</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description">
+                  {{application.positive_experiments ? application.positive_experiments : '-'}}</div>
+              </td>
+            </tr>
+            <tr>
+              <td>Negative feedback to be aware of</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description">
+                  {{application.negative_feedback_to_be_aware_of ? application.negative_feedback_to_be_aware_of : '-'}}
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>Product</td>
+              <td *ngFor="let application of comparedApplications">
+                <div class="application-description">{{application.product | getProduct | async}}</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-empty" *ngIf="comparedApplications.length === 0">
+      <div class="card-header">
+        There are no any compared applications
+      </div>
+    </div>
+  </div>
+</div>

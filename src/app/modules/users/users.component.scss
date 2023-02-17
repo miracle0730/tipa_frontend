@@ -1,0 +1,13 @@
+.users-container {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+
+  .table {
+    background-clip: border-box;
+    border-radius: .25rem;
+    background-color: #fff;
+    border: 1px solid #d8dbe0;
+  }
+}

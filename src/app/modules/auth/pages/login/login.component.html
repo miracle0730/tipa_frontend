@@ -1,0 +1,31 @@
+<form [formGroup]="loginForm">
+  <div class="auth-title">Welcome to TIPA PRO</div>
+  <div class="auth-desc">Access your account</div>
+
+  <div class="form-group">
+    <label for="exampleFormControlInput1">Email address</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com"
+      formControlName="email"
+      [ngClass]="loginForm.get('email').touched && loginForm.get('email').errors ? 'is-invalid' : ''">
+    <div class="invalid-feedback" *ngIf="loginForm.get('email').hasError('required')">
+      Email is required
+    </div>
+    <div class="invalid-feedback" *ngIf="loginForm.get('email').hasError('email')">
+      Field must be email
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="exampleFormControlInput2">Password</label>
+    <input type="password" class="form-control" id="exampleFormControlInput2" placeholder="*********"
+      formControlName="password"
+      [ngClass]="loginForm.get('password').touched && loginForm.get('password').hasError('required') ? 'is-invalid' : ''">
+    <div class="invalid-feedback">
+      Password is required
+    </div>
+  </div>
+
+  <a [routerLink]="['/reset-password']">Reset password</a>
+  <button type="button" class="btn btn-info" [disabled]="loginForm.invalid" (click)="login()">Login</button>
+  <div class="sign-up">Don't have an account yet? <a [routerLink]="['/signup']">Sign up</a></div>
+</form>
+ 

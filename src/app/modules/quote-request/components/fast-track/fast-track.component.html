@@ -1,0 +1,267 @@
+<form id="form-fastTrack" class="container-fluid" [formGroup]="rfqForm">
+
+  <div class="row section" formGroupName="segment_section">
+    <h3 class="col-12">Segment</h3>
+    
+    <div class="col-12 col-sm-6">
+      <div class="form-group" [ngClass]="{'required': getControlIsRequired(getSegmentSection.get('segment'))}">
+        <label class="control-label">Segment</label>
+        <div class="field-number">
+          <div class="number">1</div>
+          <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select segment'"
+            [settings]="getDropdownSettings()" [data]="segmentList" formControlName="segment"
+            [ngClass]="{'multiselect-invalid': getSegmentSection.get('segment').invalid && (getSegmentSection.get('segment').touched || getSegmentSection.get('segment').dirty)}">
+          </ng-multiselect-dropdown>
+        </div>
+        <div class="invalid-multiselect-message" *ngIf="getSegmentSection.get('segment').invalid && (getSegmentSection.get('segment').touched || getSegmentSection.get('segment').dirty)">Segment is required</div>
+      </div>
+      <div class="form-group" [tooltip]="(getSegmentSection.get('segment').invalid) ? 'Please select segment first' : ''"
+        [ngClass]="{'required': getControlIsRequired(getSegmentSection.get('segment_type'))}">
+        <label class="control-label">Sub Segment</label>
+        <div class="field-number">
+          <div class="number">2</div>
+          <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select sub segment'"
+            [settings]="getDropdownSettings()" [data]="segmentTypeList" formControlName="segment_type"
+            [ngClass]="{
+              'multiselect-invalid': getSegmentSection.get('segment_type').invalid && (getSegmentSection.get('segment_type').touched || getSegmentSection.get('segment_type').dirty),
+              'disabled': getSegmentSection.get('segment').invalid
+            }">
+          </ng-multiselect-dropdown>
+        </div>
+        <div class="invalid-multiselect-message" *ngIf="getSegmentSection.get('segment_type').invalid && (getSegmentSection.get('segment_type').touched || getSegmentSection.get('segment_type').dirty)">Sub Segment is required</div>
+      </div>
+      <div class="form-group" *ngIf="segmentTypeIsOther">
+        <label class="control-label">Type in sub segment</label>
+        <input type="text" class="form-control" placeholder="Type in sub segment" formControlName="other_segment_type">
+      </div>
+    </div>
+    
+    <div class="col-12 col-sm-6">
+      <div class="form-group" [tooltip]="(getSegmentSection.get('segment_type').invalid) ? 'Please select sub segment first' : ''"
+        [ngClass]="{'required': getControlIsRequired(getSegmentSection.get('packed_goods'))}">
+        <label class="control-label">Packed Goods Type</label>
+        <div class="field-number">
+          <div class="number">3</div>
+          <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select packed goods type'"
+            [settings]="getDropdownSettings()" [data]="packetGoodsList" formControlName="packed_goods"
+            [ngClass]="{
+              'multiselect-invalid': getSegmentSection.get('packed_goods').invalid && (getSegmentSection.get('packed_goods').touched || getSegmentSection.get('packed_goods').dirty),
+              'disabled': getSegmentSection.get('segment_type').invalid
+            }">
+          </ng-multiselect-dropdown>
+        </div>
+        <div class="invalid-multiselect-message" *ngIf="getSegmentSection.get('packed_goods').invalid && (getSegmentSection.get('packed_goods').touched || getSegmentSection.get('packed_goods').dirty)">Packed goods type is required</div>
+      </div>
+      <div class="form-group" *ngIf="packedGoodsIsOther">
+        <label class="control-label">Type in packed goods type</label>
+        <input type="text" class="form-control" placeholder="Type in packed goods type" formControlName="other_packed_goods">
+      </div>
+      <div class="form-group">
+        <label>Expected shelf life</label>
+        <div class="field-number">
+          <div class="number">4</div>
+          <input type="text" class="form-control" placeholder="Expected shelf life" formControlName="expected_shelf_life">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row section">
+    <h3 class="col-12">Application Format</h3>
+
+    <div class="col-12">
+      <div class="searchBy">
+        <label class="searchBy-label" formGroupName="application_section">
+          <input type="radio" name="search_by" class="form-control" [value]="searchBy.ftCode" formControlName="search_by">
+          <span>Search by Fast Track Code</span>
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-sm-6">
+          <div class="form-group" formGroupName="application_section">
+            <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Fast Track Code'"
+              [settings]="getDropdownSettings(false, {allowSearchFilter: true})" [data]="ftCodeList" formControlName="search_by_ft_code"
+              [ngClass]="{
+                'disabled': (!searchByFtCode)
+              }">
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div [ngStyle]="{'color': 'var(--info, blue)'}">
+            <div>Fast Track code structure:</div>
+            <div>FT[Application Number][Size Number][Thickness][Number of Colors]</div>
+            <div>For Example: FT011401</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-12">
+      <div class="searchBy">
+        <label class="searchBy-label" formGroupName="application_section">
+          <input type="radio" name="search_by" class="form-control" [value]="searchBy.application" formControlName="search_by">
+          <span>Search by Application</span>
+        </label>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-sm-6">
+          <div class="form-group" formGroupName="application_section" [ngClass]="{'required': getControlIsRequired(getApplicationSection.get('application'))}">
+            <label class="control-label">Application</label>
+            <div class="field-number">
+              <div class="number">1</div>
+              <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Application'"
+                [settings]="getDropdownSettings()" [data]="applicationList" formControlName="application"
+                [ngClass]="{
+                  'multiselect-invalid': getApplicationSection.get('application').invalid && (getApplicationSection.get('application').touched || getApplicationSection.get('application').dirty),
+                  'disabled': (searchByFtCode)
+                }">
+              </ng-multiselect-dropdown>
+            </div>
+            <div class="invalid-multiselect-message" *ngIf="getApplicationSection.get('application').invalid && (getApplicationSection.get('application').touched || getApplicationSection.get('application').dirty)">Application is required</div>
+          </div>
+          <div class="form-group" formGroupName="application_section" [tooltip]="(getApplicationSection.get('application').invalid) ? 'Please select application first' : ''"
+            [ngClass]="{'required': getControlIsRequired(getApplicationSection.get('application_product'))}">
+            <label class="control-label">Application and Product</label>
+            <div class="field-number">
+              <div class="number">2</div>
+              <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Application and Product'"
+                [settings]="getDropdownSettings()" [data]="applicationProductList" formControlName="application_product"
+                [ngClass]="{
+                  'multiselect-invalid': getApplicationSection.get('application_product').invalid && (getApplicationSection.get('application_product').touched || getApplicationSection.get('application_product').dirty),
+                  'disabled': (searchByFtCode) || (getApplicationSection.get('application').invalid)
+                }">
+              </ng-multiselect-dropdown>
+            </div>
+            <div class="invalid-multiselect-message" *ngIf="getApplicationSection.get('application_product').invalid && (getApplicationSection.get('application_product').touched || getApplicationSection.get('application_product').dirty)">Application and Product is required</div>
+          </div>
+          <div class="form-group" formGroupName="product_section" [tooltip]="(getApplicationSection.get('application_product').invalid) ? 'Please select application and product first' : ''"
+            [ngClass]="{'required': getControlIsRequired(getProductSection.get('thickness'))}">
+            <label class="control-label">Thickness</label>
+            <div class="field-number">
+              <div class="number">3</div>
+              <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Thickness'"
+                [settings]="getDropdownSettings(false, {idField: 'title'})" [data]="thicknessList" formControlName="thickness"
+                [ngClass]="{
+                  'multiselect-invalid': getProductSection.get('thickness').invalid && (getProductSection.get('thickness').touched || getProductSection.get('thickness').dirty),
+                  'disabled': (searchByFtCode) || (getApplicationSection.get('application_product').invalid)
+                }">
+              </ng-multiselect-dropdown>
+            </div>
+            <div class="invalid-multiselect-message" *ngIf="getProductSection.get('thickness').invalid && (getProductSection.get('thickness').touched || getProductSection.get('thickness').dirty)">Thickness is required</div>
+          </div>
+        </div>
+    
+        <div class="col-12 col-sm-6">
+          <div class="form-group" formGroupName="dimensions_section" [tooltip]="(getProductSection.get('thickness').invalid) ? 'Please select thickness first' : ''"
+            [ngClass]="{'required': getControlIsRequired(getDimensionsSection.get('dimension'))}">
+            <label class="control-label">Choose Dimension</label>
+            <div class="field-number">
+              <div class="number">4</div>
+              <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Dimension'"
+                [settings]="getDropdownSettings(false, {idField: 'title'})" [data]="dimensionList" formControlName="dimension"
+                [ngClass]="{
+                  'multiselect-invalid': getDimensionsSection.get('dimension').invalid && (getDimensionsSection.get('dimension').touched || getDimensionsSection.get('dimension').dirty),
+                  'disabled': (searchByFtCode) || (getProductSection.get('thickness').invalid)
+                }">
+              </ng-multiselect-dropdown>
+            </div>
+            <div class="invalid-multiselect-message" *ngIf="getDimensionsSection.get('dimension').invalid && (getDimensionsSection.get('dimension').touched || getDimensionsSection.get('dimension').dirty)">Dimension is required</div>
+          </div>
+          <div class="form-group" formGroupName="graphics_section" [tooltip]="(getDimensionsSection.get('dimension').invalid) ? 'Please select dimension first' : ''"
+            [ngClass]="{'required': getControlIsRequired(getGraphicsSection.get('number_of_colors'))}">
+            <label class="control-label">Number of colors</label>
+            <div class="field-number">
+              <div class="number">5</div>
+              <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Number of colors'"
+                [settings]="getDropdownSettings()" [data]="numberOfColorsList" formControlName="number_of_colors"
+                [ngClass]="{
+                  'multiselect-invalid': getGraphicsSection.get('number_of_colors').invalid && (getGraphicsSection.get('number_of_colors').touched || getGraphicsSection.get('number_of_colors').dirty),
+                  'disabled': (searchByFtCode) || (getDimensionsSection.get('dimension').invalid)
+                }">
+              </ng-multiselect-dropdown>
+            </div>
+            <div class="invalid-multiselect-message" *ngIf="getGraphicsSection.get('number_of_colors').invalid && (getGraphicsSection.get('number_of_colors').touched || getGraphicsSection.get('number_of_colors').dirty)">Number of colors is required</div>
+          </div>
+          <div class="form-group">
+            <div class="ftItem-moq">MOQ: <span>{{(getPricingSection.get('moq').value) ? getPricingSection.get('moq').value : RFQ.nameNA}}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row section additionalFeatures-section" formArrayName="additional_features_section">
+    <h3 class="col-12">Additional features for Fast Track Code: <span>{{(ftItemInfo?.code) ? ftItemInfo?.code : RFQ.nameNA}}</span></h3>
+
+    <div class="col-12" *ngIf="getAdditionalFeaturesSection.controls.length">
+      <div class="row" *ngFor="let controlParent of getAdditionalFeaturesSection.controls; let controlParentIndex = index" [formGroupName]="controlParentIndex">
+        <h5 class="col-12">{{controlParent.get('parent').value}}</h5>
+        
+        <div class="col-12 feature-list" formArrayName="list">
+          <div class="row feature-item" *ngFor="let controlFeature of getAdditionalFeatureListArray(controlParent).controls; let controlFeatureIndex = index" [formGroupName]="controlFeatureIndex">
+            <div class="col-12 col-sm-6">
+              <div class="info">
+                <input type="checkbox" class="form-control" formControlName="selected">
+                <app-stage-color-picker [stage]="controlFeature.get('stage').value" disabled="true"></app-stage-color-picker>
+                <span>{{controlFeature.get('additional_feature').value}}</span>
+              </div>
+            </div>
+            <div class="col-12 col-sm-6" *ngIf="controlFeature.get('selected').value">
+              <div class="row" formArrayName="additional_feature_hints">
+                <div class="col-6" *ngFor="let controlFeatureHint of getAdditionalFeatureHintsArray(controlFeature).controls; let controlFeatureHintIndex = index" [formGroupName]="controlFeatureHintIndex">
+                  <div class="form-group" [ngClass]="{'required': getControlIsRequired(controlFeatureHint.get('hint_value'))}">
+                    <label class="control-label">{{controlFeatureHint.get('hint_name').value}}</label>
+                    <input type="text" class="form-control" placeholder="Enter" formControlName="hint_value"
+                      [ngClass]="{
+                        'is-invalid': controlFeatureHint.get('hint_value').invalid && (controlFeatureHint.get('hint_value').touched || controlFeatureHint.get('hint_value').dirty)
+                      }">
+                    <div class="invalid-multiselect-message" *ngIf="controlFeatureHint.get('hint_value').invalid && (controlFeatureHint.get('hint_value').touched || controlFeatureHint.get('hint_value').dirty)">Field is required</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row section" formGroupName="pricing_section">
+    <div class="col-12 col-sm-4">
+      <button type="button" class="btn btn-info btn-block" (click)="calculateFtRfqPriceList()">{{(getPricingSectionPriceList.controls.length) ? 'Recalculate Price List' : 'Calculate Price List'}}</button>
+      <div class="invalid-multiselect-message" *ngIf="ftItemInfo && getPricingSectionPriceList.invalid && getPricingSectionPriceList.hasError('required')">Price List is required. Please, Calculate Price List</div>
+      <div class="invalid-multiselect-message" *ngIf="getPricingSectionPriceList.hasError('recalculate')">You have changed the specifications. Please click on the button above to recalculate the price list.</div>
+    </div>
+    <div class="col-12 col-sm-8">
+      <h6><b>Fast Track Code: <span>{{(ftItemInfo?.code) ? ftItemInfo?.code : RFQ.nameNA}}</span> - Price List</b></h6>
+
+      <table class="table table-items" formArrayName="price_list">
+        <thead>
+          <tr>
+            <th scope="col">From Qty</th>
+            <th scope="col">To Qty</th>
+            <th scope="col">Price in &#36;</th>
+            <th scope="col">Price in Euro</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="getPricingSectionPriceList.controls.length">
+          <tr *ngFor="let controlItem of getPricingSectionPriceList.controls; let controlItemIndex = index" [formGroupName]="controlItemIndex">
+            <td>{{controlItem.get('from_qty').value ? controlItem.get('from_qty').value : RFQ.nameNA}}</td>
+            <td>{{controlItem.get('to_qty').value ? controlItem.get('to_qty').value : RFQ.nameNA}}</td>
+            <td>{{controlItem.get('price_usd').value ? '&#36; ' + controlItem.get('price_usd').value : RFQ.nameNA}}</td>
+            <td>{{controlItem.get('price_eur').value ? controlItem.get('price_eur').value : RFQ.nameNA}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-info" (click)="saveRfqForm(true)">Submit</button>
+    <button type="button" class="btn btn-outline-info" (click)="saveRfqForm(false)">Submit and Generate another item</button>
+  </div>
+
+</form>

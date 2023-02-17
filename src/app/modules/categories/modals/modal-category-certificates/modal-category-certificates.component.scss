@@ -1,0 +1,63 @@
+i {
+  font-size: 20px;
+
+  &.fa-trash-alt {
+    color: var(--info);
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.button-pdf-upload {
+  position: relative;
+  margin-bottom: 5px;
+
+  &>label, label.add-file {
+    margin-bottom: 0px;
+    position: relative;
+    z-index: 1;
+    color: var(--info);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: fit-content;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    i {
+      margin-right: 5px;
+    }
+  }
+
+  .file {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    a {
+      width: calc(100% - 20px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    i {
+      color: var(--info);
+      font-size: 20px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  input {
+    display: none;
+  }
+}

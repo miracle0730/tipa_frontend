@@ -1,0 +1,7 @@
+<quill-editor 
+  class="content-editor" 
+  [placeholder]="placeholder" 
+  [formControl]="control"
+  [modules]="quillConfig"
+  (onContentChanged)="onControlChanged($event)">
+</quill-editor>

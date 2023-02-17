@@ -1,0 +1,11 @@
+<div class="color-picker" [ngClass]="{'disabled': disabled}" *ngIf="selectedItem" [tooltip]="selectedItem.title">
+  <div class="btn-group" dropdown [isDisabled]="disabled">
+    <button id="button-basic" [ngStyle]="{'background-color': 'var(' + selectedItem.color + ')'}" dropdownToggle type="button" aria-controls="dropdown-basic"></button>
+    <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic">
+      <li role="menuitem" *ngFor="let item of availableStageItemList" (click)="onClickItem(item)">
+        <input type="checkbox" [name]="'item' + item.id" [checked]="item?.id === selectedItem?.id">
+        <label>{{item.title}}</label>
+      </li>
+    </ul>
+  </div>  
+</div>

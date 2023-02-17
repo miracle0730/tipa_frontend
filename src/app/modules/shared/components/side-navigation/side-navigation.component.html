@@ -1,0 +1,160 @@
+<ul class="c-sidebar-nav">
+  <li class="c-sidebar-nav-item nav-dropdown" appIsAdmin>
+    <a class="c-sidebar-nav-link" [routerLink]="'/categories'"
+       [routerLinkActive]="['c-sidebar-nav-link__active']">Categories</a>
+  </li>
+  <li class="c-sidebar-nav-item nav-dropdown">
+    <a class="c-sidebar-nav-link" [routerLink]="'/products'" [routerLinkActive]="['c-sidebar-nav-link__active']">
+      Products
+    </a>
+
+    <div class="filter-collapse" *ngIf="isProductRoute">
+      <div class="filter">
+        <div class="filter-content">
+          <div class="form-group" *ngIf="canViewStage">
+            <label>Stage</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect"
+                                     [placeholder]="'Select stage'"
+                                     [settings]="dropdownSettings" [data]="stageList"
+                                     [(ngModel)]="productsFilter.stageListSelected"
+                                     (onSelect)="emitProductsFilterEvent()"
+                                     (onDeSelect)="emitProductsFilterEvent()">
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+        <div class="filter-content">
+          <div class="form-group">
+            <label>Territory</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect"
+                                     [placeholder]="'Select territory'"
+                                     [settings]="dropdownSettings" [data]="availableInThisTerritoriesList"
+                                     [(ngModel)]="productsFilter.territoryListSelected"
+                                     (onSelect)="emitProductsFilterEvent()"
+                                     (onDeSelect)="emitProductsFilterEvent()">
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  <li class="c-sidebar-nav-item nav-dropdown">
+    <a class="c-sidebar-nav-link" [routerLink]="'/applications'" [routerLinkActive]="['c-sidebar-nav-link__active']">
+      <span>Applications</span>
+    </a>
+
+    <div class="filter-collapse" *ngIf="isApplicationRoute">
+      <div class="filter">
+        <div class="filter-content">
+          <div class="form-group" *ngIf="canViewStage">
+            <label>Stage</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect"
+                                     [placeholder]="'Select stage'"
+                                     [settings]="dropdownSettings" [data]="stageList"
+                                     [(ngModel)]="filterOptionsSelected.stageListSelected"
+                                     (onSelect)="emitFilterEvent()"
+                                     (onDeSelect)="emitFilterEvent()">
+            </ng-multiselect-dropdown>
+          </div>
+          <div class="form-group">
+            <label>Funnel</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect"
+                                     [placeholder]="'Select funnel'"
+                                     [settings]="getDropdownSettings(true, {idField: 'type', textField: 'title'})" [data]="streamList"
+                                     [(ngModel)]="filterOptionsSelected.streamListSelected"
+                                     (onSelect)="emitFilterEvent()"
+                                     (onDeSelect)="emitFilterEvent()">
+            </ng-multiselect-dropdown>
+          </div>
+          <div class="form-group">
+            <label>Packaging/Reel</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect"
+                                     [placeholder]="'Select packaging or reel'"
+                                     [settings]="dropdownSettings" [data]="applicationList"
+                                     [(ngModel)]="filterOptionsSelected.applicationListSelected"
+                                     (onSelect)="setNextDropdownValues($event, 1); emitFilterEvent()"
+                                     (onDeSelect)="setNextDropdownValues(null, 1); emitFilterEvent()">
+            </ng-multiselect-dropdown>
+          </div>
+          <div class="form-group">
+            <label>Application</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect" [placeholder]="'Select application'"
+                                     [settings]="dropdownSettings" [data]="applicationTypeList"
+                                     [(ngModel)]="filterOptionsSelected.applicationTypeSelected"
+                                     (onSelect)="emitFilterEvent()"
+                                     (onDeSelect)="emitFilterEvent()" appDisableSelect
+                                     [tooltip]="applicationTypeList.length === 0 ? 'Please select application first' : ''"
+                                     placement="top">
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="filter">
+        <div class="filter-content">
+          <div class="form-group">
+            <label>Product family</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect" [placeholder]="'Select family'"
+                                     [settings]="dropdownSettings" [data]="productFamilyList"
+                                     [(ngModel)]="filterOptionsSelected.productFamilySelected"
+                                     (onSelect)="setNextDropdownValues($event, 2); emitFilterEvent()"
+                                     (onDeSelect)="setNextDropdownValues(null, 2); emitFilterEvent()">
+            </ng-multiselect-dropdown>
+          </div>
+          <div class="form-group">
+            <label>Product</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect" [placeholder]="'Select product'"
+                                     [settings]="dropdownSettings" [data]="productFilteredList"
+                                     [(ngModel)]="filterOptionsSelected.productFilteredSelected"
+                                     (onSelect)="emitFilterEvent()"
+                                     (onDeSelect)="emitFilterEvent()"
+                                     [tooltip]="productFilteredList.length === 0 ? 'Please select product family first' : ''"
+                                     placement="top">
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+      </div>
+      <div class="filter">
+        <div class="filter-content">
+          <div class="form-group">
+            <label>Sub-segment</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect" [placeholder]="'Select sub-segment'"
+                                     [settings]="dropdownSettings" [data]="segmentTypeList"
+                                     [(ngModel)]="filterOptionsSelected.segmentTypeSelected"
+                                     (onSelect)="setNextDropdownValues($event, 4); emitFilterEvent()"
+                                     (onDeSelect)="setNextDropdownValues(null, 4); emitFilterEvent()"
+                                     [tooltip]="segmentTypeList.length === 0 ? 'Please select segment first' : ''"
+                                     placement="top">
+            </ng-multiselect-dropdown>
+          </div>
+          <div class="form-group">
+            <label>Packed goods</label>
+            <ng-multiselect-dropdown class="custom-multiselect filter-multiselect" [placeholder]="'Select packed goods'"
+                                     [settings]="dropdownSettings" [data]="packetGoodsList"
+                                     [(ngModel)]="filterOptionsSelected.packetGoodsSelected"
+                                     (onSelect)="emitFilterEvent()"
+                                     (onDeSelect)="emitFilterEvent()" appDisableSelect
+                                     [tooltip]="packetGoodsList.length === 0 ? 'Please select sub-segment first' : ''"
+                                     placement="top">
+            </ng-multiselect-dropdown>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  <li class="c-sidebar-nav-item nav-dropdown" appIsAdmin>
+    <a class="c-sidebar-nav-link" [routerLink]="'/users'"
+       [routerLinkActive]="['c-sidebar-nav-link__active']">Users</a>
+  </li>
+  <!--  <li class="c-sidebar-nav-item nav-dropdown">-->
+  <!--    <a class="c-sidebar-nav-link" [routerLink]="'/rfq'"-->
+  <!--       [routerLinkActive]="['c-sidebar-nav-link__active']">Request for Quote</a>-->
+  <!--  </li>-->
+</ul>
+<div class="c-sidebar-footer">
+  <div class="profile">
+    <i class="far fa-user"></i>
+    <h5>{{profileData.fullname}}</h5>
+  </div>
+  <div class="exit" (click)="logOut()">
+    <i class="fas fa-sign-out-alt"></i>
+  </div>
+</div>

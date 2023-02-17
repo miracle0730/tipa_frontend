@@ -1,0 +1,35 @@
+.product-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+
+  .products {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 70px;
+
+    .product {
+      margin-bottom: 25px;
+    }
+  }
+
+  .add-product {
+    position: fixed;
+    bottom: 30px;
+    right: 50px;
+    height: 55px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      margin-right: 5px;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+@import 'rfq/rfq-general.scss';
+
+.searchBy {
+  .searchBy-label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+
+    input {
+      margin-right: 15px;
+    }
+  }
+}
+
+.ftItem-moq {
+  margin-top: 45px;
+  font-size: 22px;
+}
+
+.table.table-items {
+  tr {
+    th {
+      border-top: 0;
+    }
+  }
+}

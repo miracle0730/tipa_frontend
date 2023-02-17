@@ -1,0 +1,87 @@
+h3 {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+// field with number
+.field-number {
+  position: relative;
+
+  .number {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    display: flex;
+    align-items: center;
+    width: 15px;
+    font-size: 16px;
+    overflow: hidden;
+  }
+}
+
+form {
+  input[type='checkbox'], input[type='radio'] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  button {
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    &.tooltip-btn {
+      font-size: 11px;
+      padding: 0;
+      color: inherit;
+      text-align: left;
+    }
+  }
+
+  .form-group {
+    &.required {
+      label.control-label:after {
+        content: " *";
+        color: var(--danger, red);
+      }
+    }
+  }
+
+  .section {
+    padding: 30px 0;
+    border-bottom: 1px solid #d8dbe0;
+
+    &.additionalFeatures-section {
+      .feature-list {
+        
+        .feature-item {
+          padding: 0 0 15px 15px;
+
+          .info {
+            display: flex;
+            align-items: center;
+  
+            app-stage-color-picker {
+              margin: 0 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    padding: 20px 0;
+
+    button {
+      margin-right: 20px;
+
+      &:last-of-type {
+        margin-right: 0;
+      }
+    }
+  }
+}

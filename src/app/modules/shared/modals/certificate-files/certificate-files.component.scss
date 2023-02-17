@@ -1,0 +1,23 @@
+.files {
+  display: flex;
+  flex-direction: column;
+
+  .file {
+    color: #3c4b64;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      margin: 0;
+      padding: 10px 0;
+      cursor: pointer;
+      color: inherit;
+
+      i {
+        margin: 0 5px 0 0;
+        font-size: 20px;
+        color: inherit;
+      }
+    }
+  }
+}

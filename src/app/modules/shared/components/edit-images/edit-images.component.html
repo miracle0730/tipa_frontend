@@ -1,0 +1,37 @@
+<div class="image-container">
+  <ng-container *ngIf="copyImages.length > 0 || newImagesPreview.length > 0; else addImage">
+    <div class="images-block" [ngClass]="{'single-image': singleImage}">
+      <div class="image" *ngFor="let image of copyImages; let i = index;">
+        <img [src]="image.url" alt="">
+
+        <div class="delete" (click)="deleteOldImage(i)">
+          <i class="fas fa-trash-alt"></i>
+        </div>
+      </div>
+      <div class="image" *ngFor="let image of newImagesPreview; let i = index;">
+        <img [src]="image.url" alt="">
+
+        <div class="delete" (click)="deleteNewImage(i)">
+          <i class="fas fa-trash-alt"></i>
+        </div>
+      </div>
+
+      <!-- hide this button, when it's singleImage -->
+      <div *ngIf="!singleImage">
+        <input style="display: none" type="file" accept="image/*"  (change)="onFileChanged($event)" #fileInput>
+        <button class="btn btn-info" (click)="fileInput.click()">
+          <i class="fa fa-plus"></i>
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+
+<ng-template #addImage>
+  <div class="upload-container">
+    <i class="fas fa-image fa-2x"></i>
+    <input style="display: none" type="file" accept="image/*" (change)="onFileChanged($event)" #fileInput>
+    <button class="btn" (click)="fileInput.click()">+ Add images</button>
+  </div>
+</ng-template>

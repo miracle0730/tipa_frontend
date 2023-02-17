@@ -1,0 +1,68 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{(editCategory) ? 'Edit' : 'Add'}} category</h5>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="partnersForm">
+      <div class="form-group" *ngIf="partnersForm.get('title')">
+        <label>Partner Name *</label>
+        <input type="text"
+               class="form-control"
+               placeholder="Enter title"
+               formControlName="title"
+               [ngClass]="partnersForm.get('title').touched && partnersForm.get('title').errors ? 'is-invalid' : ''">
+        <div class="invalid-feedback" *ngIf="partnersForm.get('title').hasError('required')">
+          Title is required
+        </div>
+      </div>
+
+      <div formGroupName="metadata" *ngIf="getMetadata">
+        <div class="form-group" *ngIf="getMetadata.get('partner_owner')">
+          <label>Partner Owner *</label>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Enter Partner Owner"
+                 formControlName="partner_owner"
+                 [ngClass]="getMetadata.get('partner_owner').touched && getMetadata.get('partner_owner').errors ? 'is-invalid' : ''">
+          <div class="invalid-multiselect-message"
+               *ngIf="getMetadata.get('partner_owner').invalid &&
+                (getMetadata.get('partner_owner').touched ||
+                 getMetadata.get('partner_owner').dirty)">
+            Partner Owner is required
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="getMetadata.get('zoho_id')">
+          <label>Zoho ID *</label>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Enter Zoho Id"
+                 formControlName="zoho_id"
+                 [ngClass]="getMetadata.get('zoho_id').touched && getMetadata.get('zoho_id').errors ? 'is-invalid' : ''">
+          <div class="invalid-multiselect-message"
+               *ngIf="getMetadata.get('zoho_id').invalid &&
+                (getMetadata.get('zoho_id').touched ||
+                 getMetadata.get('zoho_id').dirty)">
+            Zoho ID is required
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-secondary"
+            data-dismiss="modal"
+            (click)="closeModal()">
+      Close
+    </button>
+    <button type="button"
+            class="btn btn-info"
+            [disabled]="partnersForm.invalid"
+            (click)="saveModal()">
+      {{(editCategory) ? 'Edit' : 'Add'}} category
+    </button>
+  </div>
+</div>

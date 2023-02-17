@@ -1,0 +1,27 @@
+<nav class="nav shadow">
+  <div class="nav-left" (click)="goToProducts()">
+    <img src="assets/images/tipa_logo.svg" alt="">
+  </div>
+  <form class="nav-right" [formGroup]="searchForm">
+    <div class="nav-right-search">
+      <i class="fas fa-bars" (click)="expandSideMenu()" tooltip="Expand side menu"></i>
+      <i class="fas fa-search" *ngIf="hideInput" tooltip="Global search"></i>
+      <div class="search-clear">
+        <input *ngIf="hideInput" #search type="text" placeholder="Search" formControlName="key" (focus)="onFocusSearch()">
+        <i class="fas fa-times-circle" *ngIf="searchForm.get('key').value" (click)="clearSearch()"></i>
+      </div>
+    </div>
+    <div class="nav-right-grouping" *ngIf="hideInput">
+      <label>
+        <span>Group / Ungroup</span>
+        <input type="checkbox" formControlName="grouping">
+      </label>
+    </div>
+    <div class="nav-right-compare" tooltip="Go to compare table" placement="left">
+      <a [routerLink]="['/comparison']">
+        <i class="fas fa-balance-scale"></i>
+        <span class="badge rounded-pill bg-danger" appGetCompareNumber></span>
+      </a>
+    </div>
+  </form>
+</nav>

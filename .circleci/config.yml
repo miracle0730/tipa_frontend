@@ -1,0 +1,105 @@
+version: 2.1
+
+references:
+
+base_image: &base_image circleci/node:12
+
+working_directory: &working_directory ~/tipa
+
+default_config: &default_config
+  docker:
+    - image: *base_image
+  working_directory: *working_directory
+
+repo_cache_key: &repo_cache_key v1-repo-{{ .Branch }}-{{ .Revision }}
+
+# Step to restore repository from cache
+restore_repo: &restore_repo
+  restore_cache:
+    key: *repo_cache_key
+
+save_repo: &save_repo
+  save_cache:
+    key: *repo_cache_key
+    paths:
+      - *working_directory
+
+set_aws_cli: &set_aws_cli
+  run:
+    name: Configure AWS CLI
+    command: |
+      sudo apt-get update
+      sudo apt-get -y -qq install awscli
+      aws --version
+      aws configure set default.region us-east-1
+      aws configure set default.output json
+      aws configure set preview.cloudfront true
+
+ngbuild: &ngbuild
+  run:
+    name: ng build
+    command: |
+      npm install
+
+      case $CIRCLE_BRANCH in
+        master)
+          npm run build:prod
+        ;;
+        development)
+          npm run build:dev
+        ;;
+      esac
+
+      echo "Build number: $CIRCLE_BUILD_NUM" > ./dist/TIPA-FE/version.txt
+      echo "Build time: $(date '+%FT%T')" >> ./dist/TIPA-FE/version.txt
+
+deploy: &deploy
+  run:
+    name: deploy to S3
+    command: |
+      case $CIRCLE_BRANCH in
+        master)
+          aws s3 sync dist/TIPA-FE s3://app-tipa-pro-com --region us-east-1 --delete
+          aws cloudfront create-invalidation --distribution-id E33GNJZ9PKH7XK --paths /\*
+        ;;
+        development)
+          aws s3 sync dist/TIPA-FE s3://app-dev-tipa-pro-com --region us-east-1 --delete
+          aws cloudfront create-invalidation --distribution-id E12N7LFFDQDZK6 --paths /\*
+        ;;
+      esac
+
+jobs:
+  build:
+    <<: *default_config
+    steps:
+      - checkout
+      - *ngbuild
+      - *save_repo
+
+  deploy:
+    <<: *default_config
+    environment:
+      JOB: "dev"
+    steps:
+      - *restore_repo
+      - *set_aws_cli
+      - *deploy
+
+workflows:
+  version: 2
+  frontend:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - development
+                - master
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - development
+                - master

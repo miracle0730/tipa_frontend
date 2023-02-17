@@ -1,0 +1,100 @@
+.c-sidebar {
+  height: 100%;
+
+  &-nav {
+    padding: 10px 0px;
+    box-sizing: border-box;
+  }
+
+  &-nav-item {
+
+    .collapse,
+    .collapsing {
+      .c-sidebar-nav-link {
+        padding-left: 40px;
+      }
+    }
+
+    .filter-collapse {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+
+      @media screen and (max-width: 500px) {
+        padding: 5px;
+      }
+
+      .filter {
+        padding: 10px 15px;
+
+        @media screen and (max-width: 500px) {
+          padding: 10px 5px;
+        }
+
+        &:not(:last-child) {
+          border-bottom: 1px solid;
+        }
+
+      }
+    }
+  }
+
+  &-nav-link {
+    outline: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    &__active {
+      background-color: var(--info);
+
+      &:hover {
+        background-color: var(--info) !important;
+      }
+    }
+
+    &>button {
+      padding: 0px;
+      border: none;
+      background-color: transparent;
+      box-shadow: none;
+      outline: none;
+
+      &:active {
+        background-color: transparent;
+      }
+    }
+
+    &:hover {
+      cursor: pointer;
+      background-color: #568;
+    }
+  }
+
+  &-footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    .profile {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      &>i {
+        margin-right: 10px;
+      }
+
+      h5 {
+        margin: 0px;
+      }
+    }
+
+    .exit {
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}

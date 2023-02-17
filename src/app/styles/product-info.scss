@@ -1,0 +1,270 @@
+.product-info {
+  &-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  &-navigation {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+
+  &-card {
+    width: 100%;
+
+    .card-header {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+
+      & > button {
+        margin-right: 20px;
+      }
+
+      &>div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        i {
+          margin-right: 10px;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+
+        h5,
+        h6 {
+          margin: 0px;
+        }
+      }
+
+      .draft {
+        margin-left: 10px;
+
+        h6 {
+          font-size: 18px;
+          ;
+        }
+
+        i,
+        h6 {
+          color: var(--danger);
+        }
+      }
+
+      .buttons {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+
+        button {
+          min-width: 100px;
+          margin: 5px;
+
+          &:first-child {
+            @media screen and (min-width: 860px) {
+              margin-right: 40px;
+            }
+          }
+        }
+      }
+    }
+
+    .card-body {
+      padding: 15px;
+
+      .block {
+        &-first {
+          padding-bottom: 20px;
+          border-bottom: 1px solid #d8dbe0;
+
+          h2 {
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          &>div {
+            &:last-child {
+              .header {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #d8dbe0;
+
+                h2 {
+                  color: var(--info);
+                }
+              }
+
+              .description {
+                padding: 10px 0px;
+
+                h5 {
+                  color: var(--info);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      #regulation {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-top: 1px solid #d8dbe0;
+
+        .certificates {
+
+          .line-certificate {
+            display: flex;
+            flex-direction: column;
+
+            &-header {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              margin-bottom: 10px;
+
+              h6 {
+                margin: 0px;
+              }
+
+              .pdf-file {
+                margin-left: 25px;
+              }
+            }
+
+            p {
+              width: 100%;
+            }
+
+          }
+        }
+      }
+
+      .certificates {
+
+        &>h5 {
+          color: #3c4b64;
+        }
+
+        a {
+          color: #3c4b64;
+        }
+
+        .certificate {
+          margin: 15px 0px;
+
+          &-header {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+
+            &-image {
+              width: 40%;
+
+              img {
+                width: 100%;
+              }
+            }
+
+            &-title {
+              margin: 7px 0px;
+              width: 100%;
+              display: flex;
+              flex-direction: column;
+            }
+          }
+
+          &-descr {
+            width: 100%;
+            margin: 5px 0px;
+          }
+        }
+      }
+
+      .text_with_enter {
+        white-space: pre-wrap;
+      }
+    }
+
+    .card-footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      @media screen and (max-width: 810px) {
+        flex-direction: column;
+      }
+
+      &>div {
+        &:first-child {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          @media screen and (max-width: 810px) {
+            justify-content: center;
+          }
+
+          h6 {
+            &:first-child {
+              margin-right: 20px;
+            }
+          }
+        }
+
+        &:last-child {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+
+          button {
+            min-width: 100px;
+            margin: 5px;
+
+
+            &:first-child {
+              @media screen and (min-width: 860px) {
+                margin-right: 40px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.pdf-file {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 5px;
+
+  i {
+    color: #3c4b64;
+    margin-right: 5px;
+    font-size: 20px;
+  }
+
+  a {
+    color: #3c4b64;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

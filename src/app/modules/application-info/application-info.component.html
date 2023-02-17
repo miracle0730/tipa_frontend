@@ -1,0 +1,341 @@
+<app-header></app-header>
+<div class="main-content">
+  <app-side-navigation class="c-sidebar c-sidebar-dark" appHideSideMenu></app-side-navigation>
+  <div class="product-info-container" *ngIf="applicationInfo && productInfo">
+
+    <div class="card product-info-card shadow-sm">
+      <div class="card-header">
+        <button type="button" class="btn btn-outline-info" (click)="goBack()">
+          <i class="fas fa-chevron-left"></i>
+          Go back
+        </button>
+        <div>
+          <i class="fas" [ngClass]="(applicationType | async) === 'Reel' ? 'fa-scroll' : 'fa-box'"
+            [tooltip]="(applicationType | async) === 'Reel' ? 'Reel' : 'Packaging'"></i>
+          <h5 *ngIf="applicationTypeInfo">{{applicationTypeInfo.title}}</h5>
+        </div>
+        <div class="draft" *ngIf="applicationInfo.draft">
+          <i class="fas fa-tag"></i>
+          <h6>Draft</h6>
+        </div>
+        <div class="buttons" appIsAdmin>
+          <button class="btn btn-outline-danger" (click)="deleteProduct()">Delete</button>
+          <button class="btn btn-info" (click)="editProduct()">Edit</button>
+          <button class="btn btn-info" (click)="duplicateProduct()">Duplicate</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <tabset #staticTabs>
+          <tab heading="Custom application" customClass="custom-tab" (selectTab)="selectTab($event)">
+            <div class="block-first row">
+              <div class="col-xl-5 col-lg-5 col-md-5 col-sm-12">
+                <app-preview-images [images]="applicationInfo.images"></app-preview-images>
+              </div>
+              <div class="col-xl-7 col-lg-7 col-md-7 col-sm-12">
+                <div class="header">
+                  <h2 *ngIf="applicationTypeInfo">{{applicationTypeInfo.title}} {{productInfo.title}}</h2>
+                  <h2 *ngIf="!applicationTypeInfo">{{productInfo.title}}</h2>
+                </div>
+                <div class="row align-items-end">
+                  <div class="col-auto">
+                    <div class="stage-block" *ngIf="stageItemInfo" [ngStyle]="{'background-color': 'var(' + stageItemInfo.color + ')', 'margin-top': '15px'}">
+                      {{stageItemInfo.title}}
+                    </div>
+                  </div>
+                  <div class="col-auto">
+                    <div class="level-of-clearance" *ngIf="levelOfClearanceInfo">
+                      {{levelOfClearanceInfo.title}}
+                    </div>
+                  </div>
+                </div>
+                <div class="description">
+                  <h5>Description</h5>
+                  <p class="text_with_enter" [innerHTML]="applicationInfo.description"></p>
+                </div>
+              </div>
+            </div>
+            <div class="block-second row">
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.application">
+                <h5>Packaging/Reel</h5>
+                <p>{{applicationInfo.application | displayReel | async}}</p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.application">
+                <h5>Application</h5>
+                <p>{{applicationInfo.application | displayCategoryById | async}}</p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.segment.length > 0">
+                <h5>Segment</h5>
+                <p>{{applicationInfo.segment | getPacketGoods | async}}</p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.segment_type.length > 0">
+                <h5>Sub Segment</h5>
+                <p>{{applicationInfo.segment_type | getPacketGoods | async}}</p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.packed_goods.length > 0">
+                <h5>Packed goods:</h5>
+                <p>{{applicationInfo.packed_goods | getPacketGoods | async}}</p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.width.length > 0">
+                <h5>Width (min - max)</h5>
+                <p *ngFor="let width of applicationInfo.width | sortBy:[true]:['stage']">
+                  <app-stage-color-picker [stage]="width.stage" disabled="true"></app-stage-color-picker>
+                  <span> {{width.min}} - {{width.max}} mm</span>
+                </p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.height.length > 0">
+                <h5>Height (min - max)</h5>
+                <p *ngFor="let height of applicationInfo.height | sortBy:[true]:['stage']">
+                  <app-stage-color-picker [stage]="height.stage" disabled="true"></app-stage-color-picker>
+                  <span> {{height.min}} - {{height.max}} mm</span>
+                </p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.thickness.length > 0">
+                <h5>Thickness</h5>
+                <p *ngFor="let thickness of applicationInfo.thickness | sortBy:[true]:['stage']">
+                  <app-stage-color-picker [stage]="thickness.stage" disabled="true"></app-stage-color-picker>
+                  <span>
+                    <ng-container *ngFor="let value of thickness.values | sortBy; let last = last;">
+                      {{value}}<ng-container *ngIf="!last">, </ng-container>
+                    </ng-container>
+                    &mu;
+                  </span>
+                </p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.tipa_production_site">
+                <h5>TIPA Production site</h5>
+                <p>{{applicationInfo.tipa_production_site}}</p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.production_process">
+                <h5>Production Process</h5>
+                <p>{{applicationInfo.production_process}}</p>
+              </div>
+              <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6" *ngIf="applicationInfo.dieline">
+                <h5>Dieline</h5>
+                <div class="pdf-file">
+                  <i class="fas fa-file-pdf"></i>
+                  <a [href]="applicationInfo.dieline.url" target="_blank">Download</a>
+                </div>
+              </div>
+            </div>
+            <div class="block-application row">
+              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12" *ngIf="( (applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0) ) || applicationInfo.features">
+                <h5>Features</h5>
+                <div *ngIf="applicationInfo.features" [innerHTML]="applicationInfo.features | textareaBullets"></div>
+    
+                <div class="row" *ngIf="(applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0)">
+                  <ng-container *ngFor="let additionalFeatures of additionalFeaturesFilteredList | sortBy:[true]:['stage']">
+                    <div class="col-12 col-sm-6 col-md-6 xol-lg-6 col-xl-6" *ngIf="additionalFeatures.mandatory">
+                      <div class="additionalFeatures-item">
+                        <app-stage-color-picker [stage]="additionalFeatures.stage" disabled="true"></app-stage-color-picker>
+                        <div class="item-tree">
+                          <div *ngFor="let parent of additionalFeatures.tree">
+                            <div class="parent">{{parent.title}}</div>
+                            <ul>
+                              <li *ngFor="let featureItem of parent.nestedCategories">{{featureItem.title}}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+    
+              </div>
+              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12" *ngIf="applicationInfo.terms_and_limitations">
+                <h5 class="color-warning">Terms and Limitations</h5>
+                <div [innerHTML]="applicationInfo.terms_and_limitations"></div>
+              </div>
+              <div class="col-12" *ngIf="(applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0)">
+                <h5>Additional Features</h5>
+                <div class="row">
+                  <ng-container *ngFor="let additionalFeatures of additionalFeaturesFilteredList | sortBy:[true]:['stage']">
+                    <div class="col-12 col-sm-6 col-md-4 xol-lg-4 col-xl-4" *ngIf="!additionalFeatures.mandatory">
+                      <div class="additionalFeatures-item">
+                        <app-stage-color-picker [stage]="additionalFeatures.stage" disabled="true"></app-stage-color-picker>
+                        <div class="item-tree">
+                          <div *ngFor="let parent of additionalFeatures.tree">
+                            <div class="parent">{{parent.title}}</div>
+                            <ul>
+                              <li *ngFor="let featureItem of parent.nestedCategories">{{featureItem.title}}</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12" *ngIf="applicationInfo.technical_considerations">
+                <h5>Technical Considerations</h5>
+                <div class="pdf-file my-2" *ngIf="applicationInfo.technical_considerations.url">
+                  <i class="fas fa-file-pdf"></i>
+                  <a [href]="applicationInfo.technical_considerations.url" target="_blank">Download</a>
+                </div>
+                <p class="text_with_enter" [innerHTML]="applicationInfo.technical_considerations.description"></p>
+              </div>
+              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12" *ngIf="applicationInfo.positive_experiments">
+                <h5>Positive Experiments</h5>
+                <p class="text_with_enter">{{applicationInfo.positive_experiments}}</p>
+              </div>
+              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12" *ngIf="applicationInfo.negative_feedback_to_be_aware_of">
+                <h5>Negative feedback to be aware of</h5>
+                <p class="text_with_enter">{{applicationInfo.negative_feedback_to_be_aware_of}}</p>
+              </div>
+            </div>
+            <div class="block-product row" *ngIf="productInfo">
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12" *ngIf="productInfo.family">
+                <h5>Product Family</h5>
+                <p>{{productInfo.family | displayCategoryById | async}}</p>
+              </div>
+              <div class="col-xl-2 col-lg-2 col-md-12 col-sm-12" *ngIf="productInfo.width.length">
+                <h5>Width (min - max)</h5>
+                <p *ngFor="let width of productInfo.width | sortBy:[true]:['stage']">
+                  <app-stage-color-picker [stage]="width.stage" disabled="true"></app-stage-color-picker>
+                  <span> {{width.min}} - {{width.max}} mm</span>
+                </p>
+              </div>
+              <div class="col-xl-8 col-lg-8 col-md-12 col-sm-12" *ngIf="productInfo.technical_considerations">
+                <h5>Technical Considerations</h5>
+                <div class="pdf-file my-2" *ngIf="productInfo.technical_considerations.url">
+                  <i class="fas fa-file-pdf"></i>
+                  <a [href]="productInfo.technical_considerations.url" target="_blank">Download</a>
+                </div>
+                <p class="text_with_enter" [innerHTML]="productInfo.technical_considerations.description"></p>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" *ngIf="productInfo.tds && productInfo.tds.length">
+                <h5>TDS</h5>
+                <div class="pdf-file" *ngFor="let tdsItem of productInfo.tds">
+                  <i class="fas fa-file-pdf"></i>
+                  <a [href]="tdsItem?.url" target="_blank">{{tdsItem?.url.split('/').pop()}}</a>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12" *ngIf="productInfo.msds && productInfo.msds.length">
+                <h5>MSDS</h5>
+                <div class="pdf-file" *ngFor="let msdsItem of productInfo.msds">
+                  <i class="fas fa-file-pdf"></i>
+                  <a [href]="msdsItem?.url" target="_blank">{{msdsItem?.url.split('/').pop()}}</a>
+                </div>
+              </div>
+            </div>
+            <div class="section row" *ngIf="industrialCertificateList.length || homeCertificateList.length || applicationInfo.rtf">
+              <h5 class="col-12">Compostability</h5>
+    
+              <div class="col-12" *ngIf="applicationInfo.rtf">
+                <!-- <h5>RTF</h5> -->
+                <p [innerHTML]="applicationInfo.rtf"></p>
+              </div>
+    
+              <div class="col-12 certificates" *ngIf="industrialCertificateList.length">
+                <h5>Industrial</h5>
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 certificate" *ngFor="let certificate of industrialCertificateList">
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title" *ngIf="certificate?.title">{{certificate?.title}}</h5>
+                        <div class="certificate-header">
+                          <div class="certificate-header-image" *ngIf="certificate?.logo">
+                            <img [src]="certificate?.logo?.url" alt="">
+                          </div>
+                          <div class="certificate-header-title">
+                            
+                            <div class="pdf-file" *ngIf="certificate?.file_url">
+                              <i class="fas fa-file-pdf"></i>
+                              <a [href]="certificate?.file_url" target="_blank">Download certificate</a>
+                            </div>
+                            <div class="pdf-file" *ngIf="certificate?.download">
+                              <i class="fas fa-file-image"></i>
+                              <a href="#" (click)="$event.preventDefault(); openCertificateFiles(certificate)">Download files</a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="certificate-descr text_with_enter" *ngIf="certificate?.description">
+                          {{certificate?.description}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+    
+              <div class="col-12 certificates" *ngIf="homeCertificateList.length">
+                <h5>Home</h5>
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 certificate" *ngFor="let certificate of homeCertificateList">
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title" *ngIf="certificate?.title">{{certificate?.title}}</h5>
+                        <div class="certificate-header">
+                          <div class="certificate-header-image" *ngIf="certificate?.logo">
+                            <img [src]="certificate?.logo?.url" alt="">
+                          </div>
+                          <div class="certificate-header-title">
+                            
+                            <div class="pdf-file" *ngIf="certificate?.file_url">
+                              <i class="fas fa-file-pdf"></i>
+                              <a [href]="certificate?.file_url" target="_blank">Download certificate</a>
+                            </div>
+                            <div class="pdf-file" *ngIf="certificate?.download">
+                              <i class="fas fa-file-image"></i>
+                              <a href="#" (click)="$event.preventDefault(); openCertificateFiles(certificate)">Download files</a>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="certificate-descr text_with_enter" *ngIf="certificate?.description">
+                          {{certificate?.description}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="section row" *ngIf="applicationInfo?.certificates?.length">
+              <h5 class="col-12">Logos and Certificates</h5>
+
+              <div class="col-12 col-sm-6 col-xl-4 mb-4" *ngFor="let itemCertificate of applicationInfo?.certificates">
+                <app-certificate-card [certificate]="itemCertificate"></app-certificate-card>
+              </div>
+            </div>
+            <div class="section block-customers row" *ngIf="applicationInfo.available_marketing_samples.length > 0">
+              <h5 class="col-12">Available Marketing Samples</h5>
+    
+              <div class="customers">
+                <div class="customer" *ngFor="let ams of applicationInfo.available_marketing_samples">
+                  <div class="customer-image">
+                    <app-preview-images [images]="ams.images"></app-preview-images>
+                  </div>
+                  <div class="customer-description" [innerHTML]="ams.description"></div>
+                </div>
+              </div>
+    
+            </div>
+            <div class="section block-customers row" *ngIf="applicationInfo.customers.length > 0">
+              <h5 class="col-12">Customers</h5>
+    
+              <div class="customers">
+                <div class="customer" *ngFor="let customer of applicationInfo.customers">
+                  <div class="customer-image">
+                    <app-preview-images [images]="customer.images"></app-preview-images>
+                  </div>
+                  <div class="customer-description" [innerHTML]="customer.description"></div>
+                </div>
+              </div>
+    
+            </div>
+          </tab>
+
+          <tab *ngIf="showFastTrack" heading="Fast Track application" customClass="custom-tab" (selectTab)="selectTab($event)">
+            <app-application-fast-track [applicationInfo]="applicationInfo" *ngIf="applicationInfo"></app-application-fast-track>
+          </tab>
+        </tabset>        
+      </div>
+
+      <div class="card-footer" appIsAdmin>
+        <div>
+          <h6>Created at: {{applicationInfo.created_at | date: 'short'}}</h6>
+          <h6>Updated at: {{applicationInfo.updated_at | date: 'short'}}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

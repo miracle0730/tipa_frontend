@@ -1,0 +1,61 @@
+@import '../../styles/product-info.scss';
+
+
+.product-info {
+  &-card {
+    .block {
+      &-second {
+        box-sizing: border-box;
+        padding: 20px 0px;
+        margin-bottom: 20px;
+
+        &>h2 {
+          margin-top: 20px;
+        }
+
+        h2,
+        h4,
+        h5 {
+          color: var(--info);
+        }
+
+        h2 {
+          margin-bottom: 20px;
+        }
+
+        .suggested-uses {
+          padding: 15px;
+          border-top: 1px solid #d8dbe0;
+
+          p {
+            margin: 0px;
+          }
+        }
+
+        .compost {
+          padding: 15px;
+          border-top: 1px solid #d8dbe0;
+        }
+      }
+    }
+
+    .thickness-item {
+      margin-bottom: 5px;
+    }
+
+    // level_of_clearance
+    .level-of-clearance {
+      color: var(--danger, red);
+    }
+
+    // additionalFeatures
+    .additionalFeatures-item {
+      display: flex;
+
+      .item-tree {
+        margin-left: 5px;
+        .parent {}
+      }
+    }
+  }
+}

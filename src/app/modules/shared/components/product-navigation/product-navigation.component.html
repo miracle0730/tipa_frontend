@@ -1,0 +1,7 @@
+<div class="info-navigation">
+  <h5>{{parentCategory.title}} ></h5>
+  <a [routerLink]="['/products']" [queryParams]="{category: category.id}">
+    <h5>{{ category.title}} ></h5>
+  </a>
+  <h5>{{ currentProduct}}</h5>
+</div>

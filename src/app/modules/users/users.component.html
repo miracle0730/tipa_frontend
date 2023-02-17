@@ -1,0 +1,31 @@
+<app-header></app-header>
+<div class="main-content">
+  <app-side-navigation
+    class="c-sidebar c-sidebar-dark"
+    appHideSideMenu>
+  </app-side-navigation>
+  <div class="users-container">
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">User Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Role</th>
+        <th scope="col">Last sing in</th>
+        <th scope="col">Delete</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let user of usersArray">
+        <td>{{user.fullname}}</td>
+        <td>{{user.email}}</td>
+        <td *ngIf="!editedRoles[user.id]"><i class="far fa-edit" (click)="editRole(user.id)"></i> {{user.rolesInfo ? user.rolesInfo.title: 'N/A'}} </td>
+        <td *ngIf="editedRoles[user.id]"><select id="userRole_{{user.id}}" name="userRole_{{user.id}}" [(ngModel)]="user.role"><option value="1">Administrator</option><option value="2">Full Funnel Viewer</option> <option value="3">Commercial viewer</option>  </select> &nbsp;<i class="fas fa-plus" (click)="saveRole(user.id, user.role)"></i></td>
+        <td>{{user.last_sign_in | date:'medium'}}</td>
+        <td *ngIf="user.rolesInfo.id==1">&nbsp;</td>
+        <td *ngIf="user.rolesInfo.id!=1"><i class="fas fa-trash-alt" (click)="deleteUser(user.id)"></i></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

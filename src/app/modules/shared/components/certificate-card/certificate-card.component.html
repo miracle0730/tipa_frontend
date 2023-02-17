@@ -1,0 +1,36 @@
+<div class="certificate" *ngIf="certificate && certificateCategory">
+  <div class="certificate-header">
+    <div class="header-icon">
+      <app-gallery [images]="[certificateLogo?.url]" *ngIf="certificateLogo?.url"></app-gallery>
+      <div class="no-image" *ngIf="!certificateLogo?.url">
+        <i class="fas fa-image"></i>
+      </div>
+    </div>
+    <div class="header-info">
+      <h5 class="header-title" *ngIf="certificateCategory?.title">{{certificateCategory?.title}}</h5>
+      <div *ngIf="certificateType">{{certificateType?.title}}</div>
+      <a class="download" *ngIf="certificateFile" [href]="certificateFile?.url" target="_blank">
+        <i class="fas fa-file-pdf"></i>
+        Download certificate
+      </a>
+      <a class="download" *ngIf="certificate?.download_graphics" (click)="modalCertificateGraphics()">
+        <i class="fas fa-file-image"></i>
+        Download files for Graphics
+      </a>
+    </div>
+  </div>
+  <div class="certificate-body">
+    <div *ngIf="certificate?.notes">
+      <b>Notes: </b>
+      <span>{{certificate?.notes}}</span>
+    </div>
+    <div *ngIf="thicknessValue">
+      <b>Approved for thickness: </b>
+      <span>{{thicknessValue}}</span>
+    </div>
+    <div *ngIf="certifiedByCategory?.metadata?.certified_by_relevant_locations">
+      <b>Mostly relevant for these locations: </b>
+      <span>{{certifiedByCategory?.metadata?.certified_by_relevant_locations}}</span>
+    </div>
+  </div>
+</div>

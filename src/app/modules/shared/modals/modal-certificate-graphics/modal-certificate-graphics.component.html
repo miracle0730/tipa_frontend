@@ -1,0 +1,28 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">TIPA Logo</h5>
+  </div>
+  <div class="modal-body">
+    <div class="list" *ngIf="graphicsList?.length">
+      <div class="item" *ngFor="let item of graphicsList">
+        <div class="preview-image">
+          <app-gallery [images]="[item?.preview_image?.url]" *ngIf="item?.preview_image?.url"></app-gallery>
+          <div class="no-image" *ngIf="!item?.preview_image?.url">
+            <i class="fas fa-image"></i>
+          </div>
+        </div>
+        <div class="file">
+          <a [href]="item?.file?.url" *ngIf="item?.file">
+            <i class="fas fa-file-download"></i>
+            <span>{{item?.file?.id}}</span>
+          </a>
+          <div *ngIf="!item?.file">There is no attached file</div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!graphicsList?.length">There are no any files</div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeModal()">Close</button>
+  </div>
+</div>

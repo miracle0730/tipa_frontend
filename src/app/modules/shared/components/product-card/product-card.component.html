@@ -1,0 +1,102 @@
+<div class="card shadow-sm" (click)="viewProductInfo()"
+  [ngClass]="{'no-image': productInfo && !productInfo.images.length}">
+  <img class="card-img-top" *ngIf="productInfo.images.length > 0" [src]="productInfo.images[0].url"
+    alt="Card image cap">
+  <div class="card-body" [ngClass]="productInfo.images.length === 0 ? 'mt-4' : ''">
+    <div class="card-title">
+      <div class="left-info">
+        <div>
+          <!-- <i *ngIf="!isProduct" class="fas" [ngClass]="(applicationType | async) === 'Reel' ? 'fa-scroll' : 'fa-box'"
+            [tooltip]="(applicationType | async) === 'Reel' ? 'Reel' : 'Packaging'"></i> -->
+          <h6 *ngIf="applicationTypeInfo">{{applicationTypeInfo.title}}</h6>
+          <h6 *ngIf="!applicationTypeInfo">{{productInfo.title}}</h6>
+        </div>
+        <div class="draft" *ngIf="productInfo.draft">
+          <i class="fas fa-tag"></i>
+          <h6>Draft</h6>
+        </div>
+      </div>
+
+      <h5 *ngIf="!isProduct">{{productInfo.product | getProduct | async}}</h5>
+    </div>
+    <div class="card-information" *ngIf="!isProduct">
+      <h6>Sub-segment: </h6>
+      <p>{{productInfo.segment_type | getPacketGoods | async}}</p>
+    </div>
+    <div class="card-information" *ngIf="!isProduct && productInfo.packed_goods.length > 0">
+      <h6>Packed goods:</h6>
+      <p>{{productInfo.packed_goods | getPacketGoods | async}}</p>
+    </div>
+    <div class="card-information card-information__product" *ngIf="isProduct">
+      <h6>Suggested uses:</h6>
+      <p>{{productInfo.segment | getPacketGoods | async}}</p>
+    </div>
+    <div class="card-text">
+      <p [innerHTML]="productInfo.description"></p>
+    </div>
+
+    <!-- Application streams -->
+    <div class="row application-streams" *ngIf="!isProduct">
+      <div class="col-12 col-sm-4" *ngIf="stageItemInfo">
+        <button type="button" class="btn btn-dark btn-block">Custom</button>
+      </div>
+      <div class="col-12 col-sm-4" *ngIf="applicationStreamFastTrack || applicationFtItemsValid">
+        <ng-container 
+          [ngTemplateOutlet]="applicationStreamButton"
+          [ngTemplateOutletContext]="{
+            stream: applicationStreamFastTrack,
+            btnValue: 'Fast Track',
+            streamType: streamTypes.FAST_TRACK
+          }">
+        </ng-container>
+      </div>
+      <div class="col-12 col-sm-4" *ngIf="applicationStreamStock">
+        <ng-container 
+          *ngIf="applicationStreamStock" 
+          [ngTemplateOutlet]="applicationStreamButton"
+          [ngTemplateOutletContext]="{
+            stream: applicationStreamStock,
+            btnValue: 'Stock',
+            streamType: streamTypes.STOCK
+          }">
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="stageItemInfo">
+    <div class="stage-block" [ngStyle]="{'background-color': 'var(' + stageItemInfo.color + ')'}">
+      {{stageItemInfo.title}}
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isProduct">
+    <ng-container *ngIf="!(isCompared | async)">
+      <button class="btn btn-outline-info compare" (click)="$event.stopPropagation(); addCompare(productInfo)"
+        tooltip="Compare application">
+        Compare
+      </button>
+    </ng-container>
+    <ng-container *ngIf="isCompared | async">
+      <button class="btn btn-info compare compare__active"
+        (click)="$event.stopPropagation(); deleteCompared(productInfo)"
+        tooltip="Delete application from compared table">
+        Compared
+      </button>
+    </ng-container>
+  </ng-container>
+</div>
+
+<ng-template #applicationStreamButton let-stream="stream" let-streamType="streamType" let-btnValue="btnValue">
+  <button type="button" class="stream-btn btn btn-dark btn-block" (click)="$event.stopPropagation()" 
+    [tooltip]="stream && (!stream.file_url && !stream.site_url) ? 'Not the attached/linked PDF' : ''">
+    <a *ngIf="stream && (stream.file_url && !stream.site_url)" (click)="openModalPdf(stream)">{{btnValue ? btnValue : 'Button'}}</a>
+    <a *ngIf="stream && (!stream.file_url && stream.site_url)" [href]="stream.site_url" target="_blank">{{btnValue ? btnValue : 'Button'}}</a>
+    <a *ngIf="stream && (!stream.file_url && !stream.site_url)">{{btnValue ? btnValue : 'Button'}}</a>
+    
+    <!-- only for Fast Track -->
+    <ng-container *ngIf="streamType && streamType === streamTypes.FAST_TRACK">
+      <a *ngIf="!stream && applicationFtItemsValid" (click)="openApplicationFtItems()">{{btnValue ? btnValue : 'Button'}}</a>
+    </ng-container>
+  </button>
+</ng-template>

@@ -1,0 +1,400 @@
+/* You can add global styles to this file, and also import other style files */
+
+/******************
+      Quill
+******************/
+@import '~quill/dist/quill.core.css';
+@import '~quill/dist/quill.snow.css';
+
+/******************
+      CoreUI
+******************/
+$theme-colors: (
+  "info": #10b8db,
+  "success": #8FD14F,
+  "warning": #F49304,
+  "partner": #800080FF,
+);
+
+@import "../node_modules/@coreui/coreui/scss/bootstrap";
+@import "../node_modules/@coreui/coreui/scss/coreui";
+
+/******************
+      COLORS
+******************/
+.color-warning {
+  color: var(--warning) !important;
+}
+
+/******************
+      GENERAL
+******************/
+* {
+  margin: 0;
+  padding: 0;
+}
+
+ol, ul {
+  padding-left: 40px;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: calc(100vh - 70px);
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #3c4b64;
+}
+
+.custom-multiselect .dropdown-list {
+  padding-top: 0px !important;
+}
+
+.custom-multiselect.disabled {
+  pointer-events: none;
+
+  .multiselect-dropdown {
+    background-color: #ebedef;
+    color: #3c4b64;
+  }
+}
+
+.filter-multiselect.disabled {
+  .multiselect-dropdown {
+    background-color: transparent;
+    color: white;
+    opacity: 0.3;
+  }
+}
+
+.custom-multiselect .multiselect-dropdown .dropdown-btn {
+  display: flex !important;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100% !important;
+  height: 35px;
+  min-height: 35px;
+  box-sizing: border-box;
+  position: relative;
+  border: 1px solid #d8dbe0 !important;
+
+  &:focus {
+    border-color: #958bef;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(50, 31, 219, .25);
+  }
+
+  & > span {
+    &:first-child {
+      &:not(.selected-item) {
+        width: calc(100% - 20px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .selected-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    border: 1px solid #39f !important;
+    background: #39f !important;
+
+    a {
+      padding: 0px !important;
+      margin-left: 5px;
+    }
+
+    &:hover {
+      box-shadow: none !important;
+    }
+  }
+
+  & > span {
+    &:last-child {
+      max-width: 50px;
+      padding-right: 0px !important;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+
+      .dropdown-down {
+        border-top: 5px solid #adadad !important;
+        border-left: 5px solid transparent !important;
+        border-right: 5px solid transparent !important;
+      }
+
+      .dropdown-up {
+        border-bottom: 5px solid #adadad !important;
+        border-left: 5px solid transparent !important;
+        border-right: 5px solid transparent !important;
+      }
+    }
+  }
+}
+
+.multiselect-item-checkbox input[type=checkbox] + div::before {
+  border: 2px solid #39f !important;
+}
+
+.multiselect-item-checkbox input[type=checkbox]:checked + div:before {
+  background: #39f !important;
+}
+
+.invalid-multiselect-message {
+  width: 100%;
+  margin-top: .25rem;
+  font-size: 80%;
+  color: #e55353;
+
+  &.color-black {
+    color: #3c4b64 !important;
+  }
+
+  &.color-warn {
+    color: var(--warning, orange) !important;
+  }
+}
+
+.form-control:not(.is-invalid):focus {
+  border-color: #768192 !important;
+  box-shadow: 0 0 0 0.2rem rgba(118, 129, 146, 0.25) !important;
+}
+
+.multiselect-dropdown .dropdown-btn {
+  border-color: #768192 !important;
+
+  &:focus {
+    border-color: #768192 !important;
+    box-shadow: 0 0 0 0.2rem rgba(118, 129, 146, 0.25) !important;
+  }
+}
+
+.multiselect-invalid .multiselect-dropdown .dropdown-btn {
+  border: 1px solid #e55353 !important;
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(229, 83, 83, 0.25) !important;
+  }
+}
+
+.multiselect-commercial {
+  .multiselect-dropdown .dropdown-btn {
+    border: 1px solid var(--success, green) !important;
+  }
+}
+
+.multiselect-underDev {
+  .multiselect-dropdown .dropdown-btn {
+    border: 1px solid var(--warning, orange) !important;
+  }
+}
+
+.multiselect-futureDev {
+  .multiselect-dropdown .dropdown-btn {
+    border: 1px solid var(--danger, red) !important;
+  }
+}
+
+.c-sidebar {
+  @media screen and (max-width: 500px) {
+    width: 170px;
+  }
+}
+
+/******************
+    RFQ
+******************/
+#rfq {
+  // default
+  .dropdown-btn, input, textarea, button {
+    border-width: 2px !important;
+  }
+
+  // when field is selected has stage
+  .multiselect-commercial, .multiselect-underDev, .multiselect-futureDev {
+    .dropdown-btn {
+      border-width: 4px !important;
+    }
+  }
+
+  // when field is selected has stage
+  .commercial-border, .underDev-border, .futureDev-border {
+    border-width: 4px !important;
+  }
+}
+
+/******************
+    app-text-editor
+******************/
+app-text-editor {
+  display: flex;
+  flex-direction: column;
+
+  &.editor-invalid {
+    border: 1px solid red !important;
+  }
+}
+
+/******************
+      MODAL
+******************/
+.modal-dialog {
+  &.modal-pdf-viewer {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+
+    @media (min-width: 576px) {
+      & {
+        min-width: 90%;
+        width: 90%;
+      }
+    }
+
+    .modal-content, app-modal-pdf-viewer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &.width-90 {
+    @media (min-width: 576px) {
+      & {
+        min-width: 90%;
+        width: 90%;
+      }
+    }
+  }
+}
+
+/******************
+      TABS
+******************/
+.custom-tab {
+  & .nav-link {
+    background-color: #D8D2D2;
+    color: #000000;
+    -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    -ms-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+
+    &.active {
+      background-color: #ffffff;
+      border-bottom-color: transparent;
+      color: #000000;
+    }
+
+    &:not(.active):hover {
+      background-color: #F2EAEA;
+    }
+  }
+}
+
+/******************
+      PDF-VIEWER
+******************/
+app-pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+
+  .pdf-view {
+    flex: 1;
+    position: relative;
+
+    .pdf-viewer {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+/******************
+      STAGE
+******************/
+.stage-block {
+  display: inline-block;
+  padding: 8px 20px;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/******************
+      AUTH
+******************/
+.auth {
+  .auth-title {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: var(--info);
+    text-align: center;
+  }
+
+  .auth-desc {
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  .auth-btn {
+    display: block;
+    margin: 0 auto;
+    min-width: 150px;
+    max-width: 100%;
+    width: auto;
+
+    @media (max-width: 575.98px) {
+      & {
+        min-width: auto;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.thickness-item-remove {
+  padding: 0;
+  font-weight: 600;
+  color: var(--danger);
+}

@@ -1,0 +1,54 @@
+.color-picker {
+  position: relative;
+  display: inline-block;
+
+  &.disabled::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+#button-basic {
+  width: 15px;
+  height: 35px;
+  border-radius: .25rem;
+  border: none;
+  outline: none;
+  background-color: var(--dark);
+}
+
+ul {
+  li {
+    display: flex;
+    align-items: center;
+    padding: .5rem;
+    cursor: pointer;
+    position: relative;
+  
+    &::after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: block;
+      content: '';
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: inherit;
+    }
+    
+    label {
+      margin: 0 0 0 10px;
+      cursor: inherit;
+    }
+  }
+}

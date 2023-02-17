@@ -1,0 +1,89 @@
+i {
+  font-size: 20px;
+  color: var(--info);
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.array-fields {
+  .field-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+
+    i {
+      margin-left: 15px;
+    }
+  }
+
+  .field-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0;
+
+    i {
+      color: inherit;
+    }
+  }
+}
+
+.button-pdf-upload {
+  position: relative;
+
+  &.disabled {
+    cursor: not-allowed;
+    * {
+      color: inherit;
+      pointer-events: none;
+    }
+  }
+
+  &>label {
+    margin-bottom: 0px;
+    position: relative;
+    z-index: 1;
+    font-size: 16px;
+    color: var(--info);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: fit-content;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    i {
+      margin-right: 5px;
+    }
+  }
+
+  .file {
+    width: 100%;
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+
+    a {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    i {
+      color: var(--info);
+      font-size: 20px;
+      margin-left: 15px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  input {
+    display: none;
+  }
+}

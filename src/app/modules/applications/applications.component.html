@@ -1,0 +1,74 @@
+<app-header (searchResults)="searchResultEvent($event)"></app-header>
+<div class="main-content">
+  <app-side-navigation
+    class="c-sidebar c-sidebar-dark"
+    appHideSideMenu
+    (filterEvent)="filterEvent($event)"
+  ></app-side-navigation>
+
+  <div class="product-container" #containerEl>
+    
+    <ng-container>
+      <!-- NO Grouping -->
+      <ng-container *ngIf="!groupedApplicationList.length">
+        <div class="products card-deck" *ngIf="applicationList.length > 0 || productList.length > 0">
+          <app-product-card
+            class="product col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-4"
+            *ngFor="let product of applicationList"
+            [productInfo]="product"
+            [isProduct]="false"
+          >
+          </app-product-card>
+          <!-- Hide products. Because it's confusing for users, when there is grouping -->
+          <!-- <app-product-card
+            class="product col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-4"
+            *ngFor="let product of productList"
+            [productInfo]="product"
+            [isProduct]="true"
+          >
+          </app-product-card> -->
+        </div>
+      </ng-container>
+
+      <!-- Grouping -->
+      <ng-container *ngIf="groupedApplicationList.length">
+        <p *ngIf="groupedApplicationInfo">
+          <button type="button" class="btn btn-outline-info" (click)="selectGroupedApplicationInfo()">
+            <i class="fas fa-chevron-left"></i>
+            Go back
+          </button>
+        </p>
+
+        <!-- Only groups -->
+        <div class="products card-deck" *ngIf="!groupedApplicationInfo">
+          <div class="product col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-4" *ngFor="let groupedItem of groupedApplicationList">
+            <app-grouped-product-card [category]="groupedItem?.category" [isProduct]="false" (click)="selectGroupedApplicationInfo(groupedItem)"></app-grouped-product-card>
+          </div>
+        </div>
+
+        <!-- Only applications of group -->
+        <div class="products card-deck" *ngIf="groupedApplicationInfo">
+          <app-product-card
+            class="product col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xl-4"
+            *ngFor="let itemOfGroup of groupedApplicationInfo.list"
+            [productInfo]="itemOfGroup"
+            [isProduct]="false">
+          </app-product-card>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="!(isLoading | async) && applicationList.length === 0">
+      There are no applications in this category
+    </ng-container>
+
+    <button
+      class="btn btn-info btn-lg add-product"
+      appIsAdmin
+      (click)="openAddApplicationModal()"
+    >
+      <i class="fa fa-plus"></i>
+      Add application
+    </button>
+  </div>
+</div>

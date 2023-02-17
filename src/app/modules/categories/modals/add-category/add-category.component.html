@@ -1,0 +1,115 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Add category</h5>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="addCategoryForm">
+      <div class="row">
+        <div class="form-group col-12">
+          <label>Title *</label>
+          <input [type]="controlTitleIsNumber ? 'number' : 'text'" min="0" class="form-control" placeholder="Enter title" formControlName="title"
+            [ngClass]="addCategoryForm.get('title').touched && addCategoryForm.get('title').errors ? 'is-invalid' : ''">
+          <div class="invalid-feedback" *ngIf="addCategoryForm.get('title').hasError('required')">
+            Title is required
+          </div>
+        </div>
+      </div>
+      <div class="row" formGroupName="metadata">
+        <!-- product_family fields -->
+        <ng-container>
+          <div class="col-12 form-group" *ngIf="getMetadata?.get('product_family_display_priority')">
+            <label>Display priority</label>
+            <ng-multiselect-dropdown class="custom-multiselect" placeholder="Display priority"
+              [settings]="singleSearchDropdownSettings" [data]="productFamilyDisplayPriorityList" formControlName="product_family_display_priority">
+            </ng-multiselect-dropdown>
+          </div>
+
+          <div class="col-12 form-group" *ngIf="showMetadataProductFamilyLogo">
+            <label>Product family logo</label>
+            <app-edit-images [singleImage]="true" [images]="[]" (addFile)="addProductFamilyLogoEvent($event)"></app-edit-images>
+          </div>
+        </ng-container>
+        
+        <!-- application_type fields -->
+        <ng-container>
+          <div class="col-12 form-group" *ngIf="getMetadata?.get('application_type_display_priority')">
+            <label>Display priority</label>
+            <ng-multiselect-dropdown class="custom-multiselect" placeholder="Display priority"
+              [settings]="singleSearchDropdownSettings" [data]="applicationTypeDisplayPriorityList" formControlName="application_type_display_priority">
+            </ng-multiselect-dropdown>
+          </div>
+
+          <div class="col-12 form-group" *ngIf="showMetadataApplicationTypeLogo">
+            <label>Application type logo</label>
+            <app-edit-images [singleImage]="true" [images]="[]" (addFile)="addApplicationTypeLogoEvent($event)"></app-edit-images>
+          </div>
+        </ng-container>
+
+        <div class="col-12 form-group array-fields" formArrayName="hints" *ngIf="showMetadataHints">
+          <label>Hints</label>
+
+          <div class="field-item" *ngFor="let controlHint of getMetadataHints.controls; let index = index" [formGroupName]="index">
+            <input type="text" class="form-control" placeholder="Enter hint" formControlName="title">
+            <i class="fas fa-trash-alt" (click)="deleteHint(index)" *ngIf="getMetadataHints.controls.length > 1"></i>
+          </div>
+          <div class="field-actions">
+            <i class="fas fa-plus" (click)="addHint()"></i>
+          </div>
+        </div>
+
+        <div class="col-12 form-group" *ngIf="showMetadataFilmGrade">
+          <label>Film grade *</label>
+          <ng-multiselect-dropdown class="custom-multiselect" placeholder="Film grade"
+            [settings]="singleDropdownSettings" [data]="filmGradeList" formControlName="film_grade"
+            [ngClass]="{
+              'multiselect-invalid': getMetadata.get('film_grade').invalid && (getMetadata.get('film_grade').touched || getMetadata.get('film_grade').dirty)
+            }">
+          </ng-multiselect-dropdown>
+          <div class="invalid-multiselect-message" *ngIf="getMetadata.get('film_grade').invalid && (getMetadata.get('film_grade').touched || getMetadata.get('film_grade').dirty)">Film Grade is required</div>
+        </div>
+
+        <div class="col-12 form-group" *ngIf="showMetadataCertificationType">
+          <label>Certification type *</label>
+          <ng-multiselect-dropdown class="custom-multiselect" placeholder="Certification type"
+            [settings]="certificationTypeDropdownSettings" [data]="certificationTypeList" formControlName="certification_type"
+            [ngClass]="{
+              'multiselect-invalid': getMetadata.get('certification_type').invalid && (getMetadata.get('certification_type').touched || getMetadata.get('certification_type').dirty)
+            }">
+          </ng-multiselect-dropdown>
+          <div class="invalid-multiselect-message" *ngIf="getMetadata.get('certification_type').invalid && (getMetadata.get('certification_type').touched || getMetadata.get('certification_type').dirty)">Certification type is required</div>
+        </div>
+
+        <div class="col-12 form-group" *ngIf="showMetadataCertificationLogo">
+          <label>Certification logo (200x100px) *</label>
+          <app-edit-images [singleImage]="true" [images]="[]" (addFile)="addCompostabilityLogoEvent($event)"></app-edit-images>
+          <div class="invalid-multiselect-message" *ngIf="getMetadata.get('certification_logo').invalid && (getMetadata.get('certification_logo').touched || getMetadata.get('certification_logo').dirty)">Certification logo is required</div>
+        </div>
+
+        <div class="col-12 form-group" *ngIf="showMetadataCertificationFile">
+          <label>Certification file *</label>
+          <div class="button-pdf-upload">
+            <ng-container *ngIf="!certificationFile">
+              <label for="consideration">
+                <i class="fas fa-file-pdf"></i>
+                <span>+ Add file</span>
+              </label>
+              <input id="consideration" type="file" (change)="addCertificationFile($event.target.files)">
+            </ng-container>
+            <ng-container *ngIf="certificationFile">
+              <div class="file">
+                <a>{{certificationFile.name ? certificationFile.name : 'file'}}</a>
+                <i class="fas fa-trash-alt" (click)="deleteCertificationFile()"></i>
+              </div>
+            </ng-container>
+          </div>
+          <div class="invalid-multiselect-message" *ngIf="getMetadata.get('certification_file').invalid && (getMetadata.get('certification_file').touched || getMetadata.get('certification_file').dirty)">Certification file is required</div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeModal()">Close</button>
+    <button type="button" class="btn btn-info" [disabled]="addCategoryForm.invalid" (click)="add()">Add
+      category</button>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+.info-navigation {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  & > h5 {
+    &:last-child {
+      color: var(--info);
+    }
+  }
+
+  a {
+    text-decoration: none;
+    color: #3c4b64;
+  }
+}

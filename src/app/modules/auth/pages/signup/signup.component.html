@@ -1,0 +1,46 @@
+<form [formGroup]="form">
+  <div class="auth-title">Welcome to TIPA PRO</div>
+
+  <!-- STEP 1 -->
+  <ng-container *ngIf="signupStep === signupStepsEnum.startSignup && form">
+    <div class="auth-desc">Get started</div>
+
+    <div class="form-group">
+      <label for="emailFormControl">Email address</label>
+      <input type="email" class="form-control" id="emailFormControl" placeholder="name@example.com" formControlName="email"
+        [ngClass]="form.get('email').touched && form.get('email').errors ? 'is-invalid' : ''">
+      <div class="invalid-feedback" *ngIf="form.get('email').hasError('required')">Email is required</div>
+      <div class="invalid-feedback" *ngIf="form.get('email').hasError('email')">Field must be email</div>
+    </div>
+
+    <button type="button" class="btn btn-info auth-btn" [disabled]="form.invalid" (click)="startSignup()">Continue</button>
+    <div class="text-align-center link-send">Activation link will be sent to your email address</div>
+    <div class="text-align-center link-send">Already have an account? <a [routerLink]="['/login']">Login</a></div>
+  </ng-container>
+
+  <!-- STEP 2 -->
+  <ng-container *ngIf="signupStep === signupStepsEnum.finishSignup && form">
+    <div class="auth-desc" *ngIf="email">{{email}}</div>
+
+    <div class="form-group">
+      <label for="passwordFormControl">Password</label>
+      <input type="password" class="form-control" id="passwordFormControl" placeholder="Type in password" formControlName="password"
+        [ngClass]="form.get('password').touched && form.get('password').errors ? 'is-invalid' : ''">
+      <div class="invalid-feedback" *ngIf="form.get('password').hasError('required')">Password is required</div>
+      <div class="invalid-feedback" *ngIf="form.get('password').hasError('minlength')">Use 8 characters or more for your password</div>
+      <div class="invalid-feedback" *ngIf="form.get('password').hasError('maxlength')">Use 50 characters or fewer for your password</div>
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPasswordFormControl">Repeat password</label>
+      <input type="password" class="form-control" id="confirmPasswordFormControl" placeholder="Repeat password" formControlName="confirmPassword"
+        [ngClass]="form.get('confirmPassword').touched && form.get('confirmPassword').errors ? 'is-invalid' : ''">
+      <div class="invalid-feedback" *ngIf="form.get('confirmPassword').hasError('required')">Repeat password is required</div>
+      <div class="invalid-feedback" *ngIf="form.get('confirmPassword').hasError('minlength')">Use 8 characters or more for your password</div>
+      <div class="invalid-feedback" *ngIf="form.get('confirmPassword').hasError('maxlength')">Use 50 characters or fewer for your password</div>
+      <div class="invalid-feedback" *ngIf="form.get('confirmPassword').hasError('confirmedValidator')">Password and Repeat Password must be match</div>
+    </div>
+
+    <button type="button" class="btn btn-info auth-btn" [disabled]="form.invalid" (click)="finishSignup()">Create an account</button>
+  </ng-container>
+</form>
