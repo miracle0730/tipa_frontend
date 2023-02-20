@@ -5,10 +5,10 @@ import {
   Output,
   EventEmitter, HostListener,
 } from '@angular/core';
-import {Router} from '@angular/router';
-import {Store} from '@ngrx/store';
-import {Subscription} from 'rxjs';
-import {map, filter} from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
 import {
   AuthService,
   AmplitudeService,
@@ -16,7 +16,7 @@ import {
   ApplicationService,
   ProductService,
 } from '@services';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import {
   CategoryModel,
   ProfileModel,
@@ -60,7 +60,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   private productSubscription: Subscription;
   private searchEventSubscription: Subscription;
   public profileData: ProfileModel;
-
+  
   public dropdownSettings: IDropdownSettings = {
     singleSelection: true,
     idField: 'id',
@@ -70,12 +70,13 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     enableCheckAll: false,
     closeDropDownOnSelection: true,
   };
-
+  
   public categories: CategoryModel[] = [];
   public products: ProductModel[] = [];
 
+  public showFastTrack: boolean = true;
   public stageList: StageItem[] = AppConstants.StageItemList;
-  public streamList: StreamModel[] = AppConstants.StreamList;
+  public streamList: StreamModel[];
   public availableInThisTerritoriesList: CategoryModel[] = [];
   public applicationList: CategoryModel[] = [];
   public applicationTypeList: CategoryModel[] = [];
@@ -84,7 +85,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
   public segmentList: CategoryModel[] = [];
   public segmentTypeList: CategoryModel[] = [];
   public packetGoodsList: CategoryModel[] = [];
-
+  
   public filterOptionsSelected: FilterSelectModel = {
     stageListSelected: [],
     streamListSelected: [],
@@ -134,24 +135,31 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
       .pipe(map((profileState) => profileState.profile))
       .subscribe((profile) => {
         this.profileData = profile;
-        this.canViewStage = !(profile.role==3);
+        this.canViewStage = !(profile.role == 3);
+      });
+
+    this.store
+      .select('categories')
+      .subscribe(({isShowFastTrack}) => {
+        console.log("AAAAAAAAAAAAA", isShowFastTrack);
+        this.streamList = isShowFastTrack ? AppConstants.StreamList : AppConstants.StreamList1;
       });
 
     if (this.isProductRoute) {
 
       this.subscription2 = this.store
-          .select('categories')
-          .pipe(map((categoryState) => categoryState.categories))
-          .subscribe((categories: CategoryModel[]) => {
-              this.categories = categories;
-              this.getAvailableInThisTerritoriesList();
+        .select('categories')
+        .pipe(map((categoryState) => categoryState.categories))
+        .subscribe((categories: CategoryModel[]) => {
+          this.categories = categories;
+          this.getAvailableInThisTerritoriesList();
 
-              let parsedProductsFilter: ProductsFilterModel = this.productService.getProductsFilter();
+          let parsedProductsFilter: ProductsFilterModel = this.productService.getProductsFilter();
 
-              if (parsedProductsFilter) {
-                  this.productsFilter = parsedProductsFilter;
-              }
-          });
+          if (parsedProductsFilter) {
+            this.productsFilter = parsedProductsFilter;
+          }
+        });
     }
 
     if (this.isApplicationRoute) {
@@ -223,7 +231,7 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
           map((productState) => productState.allProducts)
         )
         .subscribe((products: ProductModel[]) => {
-            const parsed = JSON.parse(localStorage.getItem('mainFilter'));
+          const parsed = JSON.parse(localStorage.getItem('mainFilter'));
           this.products = products;
           this.productFilteredList = products;
         });
@@ -233,17 +241,17 @@ export class SideNavigationComponent implements OnInit, OnDestroy {
     }
   }
 
-    getAvailableInThisTerritoriesList() {
-        const AVAILABLE_TERRITORIES = AppConstants.MainCategoryNames.TERRITORIES;
-        const availableInThisTerritoriesList: CategoryModel = (this.categories)
-            ? this.categories.find((category) => (category.title === AVAILABLE_TERRITORIES.title && category.level === AVAILABLE_TERRITORIES.level))
-            : null;
-        console.log('AC', availableInThisTerritoriesList, availableInThisTerritoriesList.id);
+  getAvailableInThisTerritoriesList() {
+    const AVAILABLE_TERRITORIES = AppConstants.MainCategoryNames.TERRITORIES;
+    const availableInThisTerritoriesList: CategoryModel = (this.categories)
+      ? this.categories.find((category) => (category.title === AVAILABLE_TERRITORIES.title && category.level === AVAILABLE_TERRITORIES.level))
+      : null;
+    console.log('AC', availableInThisTerritoriesList, availableInThisTerritoriesList.id);
 
-        this.availableInThisTerritoriesList = (availableInThisTerritoriesList)
-            ? this.multiSelectService.getDropdownById(this.categories, availableInThisTerritoriesList.id)
-            : [];
-    }
+    this.availableInThisTerritoriesList = (availableInThisTerritoriesList)
+      ? this.multiSelectService.getDropdownById(this.categories, availableInThisTerritoriesList.id)
+      : [];
+  }
 
   listenSearchEvent() {
     this.searchEventSubscription = this.applicationService.searchEvent.subscribe(

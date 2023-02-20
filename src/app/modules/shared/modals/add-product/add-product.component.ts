@@ -1,6 +1,6 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-import {BsModalRef} from 'ngx-bootstrap/modal';
-import {HttpErrorResponse} from '@angular/common/http';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { BsModalRef } from 'ngx-bootstrap/modal';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   FormBuilder,
   FormGroup,
@@ -8,7 +8,7 @@ import {
   Validators,
   FormArray,
 } from '@angular/forms';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import {
   CategoryModel,
   ProductModel,
@@ -20,6 +20,7 @@ import {
   AdditionalFeaturesModel,
   TdsModel,
   MsdsModel,
+  CollateralsModel,
   LevelOfClearanceModel,
   StageItemIdsModel,
   CertificatesModel,
@@ -32,15 +33,15 @@ import {
   AmplitudeService,
   ThicknessService,
 } from '@services';
-import {Subscription} from 'rxjs';
-import {distinctUntilChanged, map} from 'rxjs/operators';
-import {Store} from '@ngrx/store';
+import { Subscription } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 import * as fromApp from '@store/app.reducer';
 import * as ProductActions from '@store/product/product.actions';
 import * as ApplicationActions from '@store/application/application.actions';
 import * as CategoryActions from '@store/category/category.actions';
 import * as _ from 'lodash';
-import {AppConstants} from '@core/app.constants';
+import { AppConstants } from '@core/app.constants';
 
 export interface ThicknessFieldItem {
   values: any[];
@@ -54,6 +55,7 @@ enum SelectFieldEnum {
   additionalFeatures = 4,
   tds = 5,
   msds = 6,
+  collaterals = 7,
 }
 
 @Component({
@@ -95,26 +97,30 @@ export class AddProductComponent implements OnInit, OnDestroy {
   // Thickness
   public thicknessList: any[] = [];
   public thicknessFieldList: ThicknessFieldItem[] = [
-    {values: [], stage: null}
+    { values: [], stage: null }
   ];
   public thicknessRequiredField: boolean;
   public thicknessChangedSelect: boolean;
   // AdditionalFeatures
   public additionalFeaturesList: any[] = [];
   public additionalFeaturesFieldList: AdditionalFeaturesModel[] = [
-    {ids: [], stage: null, mandatory: false}
+    { ids: [], stage: null, mandatory: false }
   ];
   // Segment fields
   public segmentList: CategoryModel[] = [];
   public segmentTypeList: CategoryModel[] = [];
   public packedGoodsList: CategoryModel[] = [];
+  // collaterals
+  public collateralsFieldList: CollateralsModel[] = [
+    { url: '', }
+  ];
   // tds
   public tdsFieldList: TdsModel[] = [
-    {url: '',}
+    { url: '', }
   ];
   // msds
   public msdsFieldList: MsdsModel[] = [
-    {url: ''}
+    { url: '' }
   ];
   public files: any[] = [];
   public technicalConsiderationFile: File = null;
@@ -158,13 +164,13 @@ export class AddProductComponent implements OnInit, OnDestroy {
   // PrintingAvailableMethodList
   public printingAvailableMethodList: CategoryModel[] = [];
   public printingMethodAvailableFieldsList: ThicknessFieldItem[] = [
-    {values: [], stage: null}
+    { values: [], stage: null }
   ];
 
   // Available in these Territories
   public availableInThisTerritoriesList: CategoryModel[] = [];
   public availableInThisTerritoriesFieldsList: ThicknessFieldItem[] = [
-    {values: [], stage: null}
+    { values: [], stage: null }
   ];
 
   // Partners List
@@ -229,6 +235,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
       }),
       tds: new FormControl(null),
       msds: new FormControl(null),
+      collaterals: new FormControl(null),
       rtf: new FormControl(''),
       certifications: new FormArray([]),
       certificates: new FormArray([this.getInitialCertificatesItem()]),
@@ -362,312 +369,317 @@ export class AddProductComponent implements OnInit, OnDestroy {
       .select('categories')
       .pipe(map((categoryStore) => categoryStore.categories))
       .subscribe((categories: CategoryModel[]) => {
-          this.categories = categories;
+        this.categories = categories;
 
-          if (categories.length > 0) {
-            // GET data lists
-            this.getCertifiedByList();
-            this.getPrintingAvailableMethodList();
-            this.getAvailableInThisTerritoriesList();
-            this.getPartners();
-            this.getMeasureUnitList();
-            this.getAvailableProductCertificatesList();
+        if (categories.length > 0) {
+          // GET data lists
+          this.getCertifiedByList();
+          this.getPrintingAvailableMethodList();
+          this.getAvailableInThisTerritoriesList();
+          this.getPartners();
+          this.getMeasureUnitList();
+          this.getAvailableProductCertificatesList();
 
-            this.familyList = this.multiSelectService.getDropdownById(
+          this.familyList = this.multiSelectService.getDropdownById(
+            categories,
+            2
+          );
+          // Segment
+          this.getSegmentList();
+
+          // Packaging
+          const APPLICATION = AppConstants.MainCategoryNames.APPLICATION;
+          const applicationsParent = categories.find((item) => (item.title === APPLICATION.title && item.level === APPLICATION.level));
+          if (applicationsParent) {
+            this.packagingList = this.multiSelectService.getDropdownById(
               categories,
-              2
+              applicationsParent.id
             );
-            // Segment
-            this.getSegmentList();
-
-            // Packaging
-            const APPLICATION = AppConstants.MainCategoryNames.APPLICATION;
-            const applicationsParent = categories.find((item) => (item.title === APPLICATION.title && item.level === APPLICATION.level));
-            if (applicationsParent) {
-              this.packagingList = this.multiSelectService.getDropdownById(
-                categories,
-                applicationsParent.id
-              );
-            }
-            const defaultReel = (this.packagingList && this.packagingList.length)
-              ? this.packagingList.find(item => item.title.includes('Reel'))
-              : null;
-            this.productForm.get('packaging').setValue((defaultReel) ? [defaultReel] : null);
-
-            // GET AdditionalFeaturesList
-            const ADDITIONAL_FEATURES = AppConstants.MainCategoryNames.ADDITIONAL_FEATURES;
-            const additionalFeaturesParent = this.categories
-              .find((item) => (item.title === ADDITIONAL_FEATURES.title && item.level === ADDITIONAL_FEATURES.level));
-            if (additionalFeaturesParent) {
-              const secondLevelList = this.multiSelectService.getDropdownById(
-                categories,
-                additionalFeaturesParent.id
-              );
-
-              const thirdLevelList = secondLevelList.map((parent) => {
-                return this.multiSelectService.getDropdownById(categories, parent.id);
-              });
-
-              thirdLevelList.map(arr => this.additionalFeaturesList.push(...arr));
-            }
-
-            // Compostability logos
-            const COMPOSTABILITY_LOGOS = AppConstants.MainCategoryNames.COMPOSTABILITY_LOGOS;
-            const compostabilityLogosParent = categories.find((item) => (item.title === COMPOSTABILITY_LOGOS.title && item.level === COMPOSTABILITY_LOGOS.level));
-            if (compostabilityLogosParent) {
-              this.compostabilityLogosList = this.multiSelectService.getDropdownById(categories, compostabilityLogosParent.id);
-            }
-
-            // Food contacts
-            const FOOD_CONTACTS = AppConstants.MainCategoryNames.FOOD_CONTACTS;
-            const foodContactsParent = categories.find((item) => (item.title === FOOD_CONTACTS.title && item.level === FOOD_CONTACTS.level));
-            if (foodContactsParent) {
-              this.foodContactsList = this.multiSelectService.getDropdownById(categories, foodContactsParent.id);
-            }
-
-            // GET initial data
-            this.getInitialCertificates();
           }
+          const defaultReel = (this.packagingList && this.packagingList.length)
+            ? this.packagingList.find(item => item.title.includes('Reel'))
+            : null;
+          this.productForm.get('packaging').setValue((defaultReel) ? [defaultReel] : null);
 
-          if (this.formData) {
-            // GET/SET packaging
-            const foundApplication = (this.formData.application && this.formData.application.length)
-              ? this.categories.find(category => category.id === this.formData.application[0])
-              : null;
-            let foundPackaging = (foundApplication)
-              ? this.categories.find(category => category.id === foundApplication.parent_id)
-              : null;
-            if (!foundPackaging) { // Default as Reel
-              foundPackaging = (this.packagingList && this.packagingList.length)
-                ? this.packagingList.find(item => item.title.includes('Reel'))
-                : null;
-            }
-            this.productForm.get('packaging').setValue((foundPackaging) ? [foundPackaging] : null);
-            this.getApplicationsList();
-
-            // application
-            const selectedApplication = (this.formData.application && this.formData.application.length && this.applicationsList.length)
-              ? this.applicationsList.find(item => item.id === this.formData.application[0])
-              : null;
-
-            // manufacturing_technique
-            const selectedMT = (this.formData.manufacturing_technique)
-              ? this.manufacturingTechniqueList.find(item => item.id === this.formData.manufacturing_technique)
-              : null;
-
-            // segment
-            const preselectSegment: CategoryModel[] = this.multiSelectService.preselectOptions(
-              this.formData.segment,
-              categories
+          // GET AdditionalFeaturesList
+          const ADDITIONAL_FEATURES = AppConstants.MainCategoryNames.ADDITIONAL_FEATURES;
+          const additionalFeaturesParent = this.categories
+            .find((item) => (item.title === ADDITIONAL_FEATURES.title && item.level === ADDITIONAL_FEATURES.level));
+          if (additionalFeaturesParent) {
+            const secondLevelList = this.multiSelectService.getDropdownById(
+              categories,
+              additionalFeaturesParent.id
             );
 
-            // segment_type
-            const preselectSegmentType: CategoryModel[] = this.multiSelectService.preselectOptions(
-              this.formData.segment_type,
-              categories
-            );
-
-            // packed_goods
-            const preselectPackedGoods: CategoryModel[] = this.multiSelectService.preselectOptions(
-              this.formData.packed_goods,
-              categories
-            );
-
-            // level_of_clearance
-            const foundLevelOfClearanceItem: LevelOfClearanceModel = (this.formData.level_of_clearance)
-              ? this.levelOfClearanceList.find(item => (item && item.id === this.formData.level_of_clearance))
-              : null;
-            const preselectLevelOfClearance: LevelOfClearanceModel[] = (foundLevelOfClearanceItem) ? [foundLevelOfClearanceItem] : [];
-
-            // partner_name
-            const preselectPartnerName: CategoryModel[] = this.multiSelectService.preselectOptions(
-              this.formData.partner_name,
-              categories
-            );
-
-            this.productForm.get('production_site').setValue(this.formData.production_site);
-            this.productForm.get('notes_area').setValue(this.formData.notes_area);
-            this.productForm.patchValue({
-              ...this.formData,
-              certificates: [],
-              level_of_clearance: preselectLevelOfClearance,
-              display_priority: (this.formData.display_priority && this.displayPriorityList.find(item => item === this.formData.display_priority)) ? [this.formData.display_priority] : [5], // 5 as default
-              segment: (preselectSegment && Array.isArray(preselectSegment)) ? preselectSegment : [],
-              segment_type: (preselectSegmentType && Array.isArray(preselectSegmentType)) ? preselectSegmentType : [],
-              packed_goods: (preselectPackedGoods && Array.isArray(preselectPackedGoods)) ? preselectPackedGoods : [],
-              width: [],
-              moqArray: [],
-              application: (selectedApplication) ? [selectedApplication] : null,
-              manufacturing_technique: (selectedMT) ? [selectedMT] : null,
-              tds: this.formData.tds || {},
-              technical_considerations:
-                this.formData.technical_considerations || {},
-              barrier: this.formData.barrier || {},
-              printability: this.formData.printability || {},
-              partner_name: (preselectPartnerName && Array.isArray(preselectPartnerName)) ? preselectPartnerName : [],
+            const thirdLevelList = secondLevelList.map((parent) => {
+              return this.multiSelectService.getDropdownById(categories, parent.id);
             });
 
-            this.files = this.formData.images;
-            this.technicalConsiderationFile =
-              this.formData && this.formData.technical_considerations
-                ? this.formData.technical_considerations.url
-                : null;
-            this.barrierFile = (this.formData && this.formData.barrier)
-              ? this.formData.barrier.url
-              : null;
-            this.printabilityFile = (this.formData && this.formData.printability)
-              ? this.formData.printability.url
-              : null;
-            this.certificatesFiles = _.cloneDeep(this.formData.certifications);
-
-            // tds
-            this.tdsFieldList = (this.formData && this.formData.tds && this.formData.tds.length)
-              ? _.cloneDeep(this.formData.tds)
-              : [{url: ''}];
-
-            // msds
-            this.msdsFieldList = (this.formData && this.formData.msds && this.formData.msds.length)
-              ? _.cloneDeep(this.formData.msds)
-              : [{url: ''}];
-
-            // width
-            if (this.formData.width && this.formData.width.length) {
-              while (this.getWidth.length !== 0) {
-                this.getWidth.removeAt(0);
-              }
-
-              this.formData.width.map(item => {
-                let preselectMeasureUnit: CategoryModel[] = null;
-                if (item.measure_unit) {
-                  preselectMeasureUnit = this.multiSelectService.preselectOptions(
-                    item.measure_unit,
-                    categories
-                  );
-                }
-                this.getWidth.push(new FormGroup({
-                  min: new FormControl(item.min),
-                  max: new FormControl(item.max),
-                  stage: new FormControl(item.stage),
-                  measure_unit: new FormControl(preselectMeasureUnit),
-                }));
-              });
-            }
-
-            // moq
-              this.moqListRequiredField = true;
-            if (this.formData.moq && this.formData.moq.length) {
-              while (this.getMOQ.length !== 0) {
-                this.getMOQ.removeAt(0);
-              }
-
-              this.formData.moq.map(item => {
-                let preselectMeasureUnit: CategoryModel[] = null;
-                if (item.measure_unit) {
-                  preselectMeasureUnit = this.multiSelectService.preselectOptions(
-                    item.measure_unit,
-                    categories
-                  );
-                }
-
-                this.getMOQ.push(new FormGroup({
-                  moq: new FormControl(item.moq, [Validators.required]),
-                  measure_unit: new FormControl(preselectMeasureUnit),
-                  notes: new FormControl(item.notes),
-                  stage: new FormControl(null)
-                }));
-              });
-            }
-
-            // printing_method
-            if (this.formData.printing_method && this.formData.printing_method.length) {
-              this.printingMethodAvailableFieldsList = JSON.parse(JSON.stringify(this.formData.printing_method))
-                .filter((item) => {
-                  item.values = item.values.filter((el) => (typeof el === 'string') ? el : false);
-                  return item;
-                })
-                .map((item) => {
-                  item.values = item.values.map((title) => {
-                    return this.printingAvailableMethodList.find((obj) => obj.title === title);
-                  });
-                  return item;
-                })
-                .filter((item) => {
-                  item.values = item.values.filter((el) => (el) ? el : false);
-                  return (item.values.length > 0);
-                });
-
-              // If array is empty, set first item
-              if (!this.printingMethodAvailableFieldsList.length) {
-                this.printingMethodAvailableFieldsList.push({values: [], stage: null});
-              }
-            }
-
-            // available_territories
-            if (this.formData.available_territories && this.formData.available_territories.length) {
-              this.availableInThisTerritoriesFieldsList = JSON.parse(JSON.stringify(this.formData.available_territories))
-                .filter((item) => {
-                  item.values = item.values.filter((el) => (typeof el === 'string') ? el : false);
-                  return item;
-                })
-                .map((item) => {
-                  item.values = item.values.map((title) => {
-                    return this.availableInThisTerritoriesList.find((obj) => obj.title === title);
-                  });
-                  return item;
-                })
-                .filter((item) => {
-                  item.values = item.values.filter((el) => (el) ? el : false);
-                  return (item.values.length > 0);
-                });
-
-              // If array is empty, set first item
-              if (!this.availableInThisTerritoriesFieldsList.length) {
-                this.availableInThisTerritoriesFieldsList.push({values: [], stage: null});
-              }
-            }
-
-            // SET additionalFeaturesFieldList
-            if (this.formData.additional_features.length > 0 && this.additionalFeaturesList.length > 0) {
-              this.additionalFeaturesFieldList = JSON.parse(JSON.stringify(this.formData.additional_features))
-                .filter((item) => {
-                  item.ids = item.ids.filter((el) => (typeof el === 'number') ? el : false);
-                  return item;
-                })
-                .map((item) => {
-                  item.ids = item.ids.map((id) => {
-                    return this.additionalFeaturesList.find((obj) => obj.id === id);
-                  });
-                  return item;
-                })
-                .filter((item) => {
-                  item.ids = item.ids.filter((el) => (el) ? el : false);
-                  return (item.ids.length > 0);
-                });
-
-              // If array is empty, set first item
-              if (!this.additionalFeaturesFieldList.length) {
-                this.additionalFeaturesFieldList.push({ids: [], stage: null, mandatory: false});
-              }
-            }
-
-            // Set family
-            this.familySelectedItems = this.multiSelectService.preselectOptions(
-              this.formData.family,
-              categories
-            );
-
-            // Set stage
-            this.stageSelectedItems = this.stageList.filter((item) => item.id === this.formData.stage);
-
-            this.setFamilyStatus();
-            this.setStageStatus();
-            this.preselectCertificates(this.formData.certifications); // Old certifications
-            this.preselectCertificatesArray(this.formData.certificates);
-          } else {
-            // Default values
-            this.productForm?.get('display_priority')?.setValue([5], {emitEvent: false});
+            thirdLevelList.map(arr => this.additionalFeaturesList.push(...arr));
           }
+
+          // Compostability logos
+          const COMPOSTABILITY_LOGOS = AppConstants.MainCategoryNames.COMPOSTABILITY_LOGOS;
+          const compostabilityLogosParent = categories.find((item) => (item.title === COMPOSTABILITY_LOGOS.title && item.level === COMPOSTABILITY_LOGOS.level));
+          if (compostabilityLogosParent) {
+            this.compostabilityLogosList = this.multiSelectService.getDropdownById(categories, compostabilityLogosParent.id);
+          }
+
+          // Food contacts
+          const FOOD_CONTACTS = AppConstants.MainCategoryNames.FOOD_CONTACTS;
+          const foodContactsParent = categories.find((item) => (item.title === FOOD_CONTACTS.title && item.level === FOOD_CONTACTS.level));
+          if (foodContactsParent) {
+            this.foodContactsList = this.multiSelectService.getDropdownById(categories, foodContactsParent.id);
+          }
+
+          // GET initial data
+          this.getInitialCertificates();
         }
+
+        if (this.formData) {
+          // GET/SET packaging
+          const foundApplication = (this.formData.application && this.formData.application.length)
+            ? this.categories.find(category => category.id === this.formData.application[0])
+            : null;
+          let foundPackaging = (foundApplication)
+            ? this.categories.find(category => category.id === foundApplication.parent_id)
+            : null;
+          if (!foundPackaging) { // Default as Reel
+            foundPackaging = (this.packagingList && this.packagingList.length)
+              ? this.packagingList.find(item => item.title.includes('Reel'))
+              : null;
+          }
+          this.productForm.get('packaging').setValue((foundPackaging) ? [foundPackaging] : null);
+          this.getApplicationsList();
+
+          // application
+          const selectedApplication = (this.formData.application && this.formData.application.length && this.applicationsList.length)
+            ? this.applicationsList.find(item => item.id === this.formData.application[0])
+            : null;
+
+          // manufacturing_technique
+          const selectedMT = (this.formData.manufacturing_technique)
+            ? this.manufacturingTechniqueList.find(item => item.id === this.formData.manufacturing_technique)
+            : null;
+
+          // segment
+          const preselectSegment: CategoryModel[] = this.multiSelectService.preselectOptions(
+            this.formData.segment,
+            categories
+          );
+
+          // segment_type
+          const preselectSegmentType: CategoryModel[] = this.multiSelectService.preselectOptions(
+            this.formData.segment_type,
+            categories
+          );
+
+          // packed_goods
+          const preselectPackedGoods: CategoryModel[] = this.multiSelectService.preselectOptions(
+            this.formData.packed_goods,
+            categories
+          );
+
+          // level_of_clearance
+          const foundLevelOfClearanceItem: LevelOfClearanceModel = (this.formData.level_of_clearance)
+            ? this.levelOfClearanceList.find(item => (item && item.id === this.formData.level_of_clearance))
+            : null;
+          const preselectLevelOfClearance: LevelOfClearanceModel[] = (foundLevelOfClearanceItem) ? [foundLevelOfClearanceItem] : [];
+
+          // partner_name
+          const preselectPartnerName: CategoryModel[] = this.multiSelectService.preselectOptions(
+            this.formData.partner_name,
+            categories
+          );
+
+          this.productForm.get('production_site').setValue(this.formData.production_site);
+          this.productForm.get('notes_area').setValue(this.formData.notes_area);
+          this.productForm.patchValue({
+            ...this.formData,
+            certificates: [],
+            level_of_clearance: preselectLevelOfClearance,
+            display_priority: (this.formData.display_priority && this.displayPriorityList.find(item => item === this.formData.display_priority)) ? [this.formData.display_priority] : [5], // 5 as default
+            segment: (preselectSegment && Array.isArray(preselectSegment)) ? preselectSegment : [],
+            segment_type: (preselectSegmentType && Array.isArray(preselectSegmentType)) ? preselectSegmentType : [],
+            packed_goods: (preselectPackedGoods && Array.isArray(preselectPackedGoods)) ? preselectPackedGoods : [],
+            width: [],
+            moqArray: [],
+            application: (selectedApplication) ? [selectedApplication] : null,
+            manufacturing_technique: (selectedMT) ? [selectedMT] : null,
+            tds: this.formData.tds || {},
+            technical_considerations:
+              this.formData.technical_considerations || {},
+            barrier: this.formData.barrier || {},
+            printability: this.formData.printability || {},
+            partner_name: (preselectPartnerName && Array.isArray(preselectPartnerName)) ? preselectPartnerName : [],
+          });
+
+          this.files = this.formData.images;
+          this.technicalConsiderationFile =
+            this.formData && this.formData.technical_considerations
+              ? this.formData.technical_considerations.url
+              : null;
+          this.barrierFile = (this.formData && this.formData.barrier)
+            ? this.formData.barrier.url
+            : null;
+          this.printabilityFile = (this.formData && this.formData.printability)
+            ? this.formData.printability.url
+            : null;
+          this.certificatesFiles = _.cloneDeep(this.formData.certifications);
+
+          // collaterals
+          this.collateralsFieldList = (this.formData && this.formData.collaterals && this.formData.collaterals.length)
+            ? _.cloneDeep(this.formData.collaterals)
+            : [{ url: '' }];
+
+          // tds
+          this.tdsFieldList = (this.formData && this.formData.tds && this.formData.tds.length)
+            ? _.cloneDeep(this.formData.tds)
+            : [{ url: '' }];
+
+          // msds
+          this.msdsFieldList = (this.formData && this.formData.msds && this.formData.msds.length)
+            ? _.cloneDeep(this.formData.msds)
+            : [{ url: '' }];
+
+          // width
+          if (this.formData.width && this.formData.width.length) {
+            while (this.getWidth.length !== 0) {
+              this.getWidth.removeAt(0);
+            }
+
+            this.formData.width.map(item => {
+              let preselectMeasureUnit: CategoryModel[] = null;
+              if (item.measure_unit) {
+                preselectMeasureUnit = this.multiSelectService.preselectOptions(
+                  item.measure_unit,
+                  categories
+                );
+              }
+              this.getWidth.push(new FormGroup({
+                min: new FormControl(item.min),
+                max: new FormControl(item.max),
+                stage: new FormControl(item.stage),
+                measure_unit: new FormControl(preselectMeasureUnit),
+              }));
+            });
+          }
+
+          // moq
+          this.moqListRequiredField = true;
+          if (this.formData.moq && this.formData.moq.length) {
+            while (this.getMOQ.length !== 0) {
+              this.getMOQ.removeAt(0);
+            }
+
+            this.formData.moq.map(item => {
+              let preselectMeasureUnit: CategoryModel[] = null;
+              if (item.measure_unit) {
+                preselectMeasureUnit = this.multiSelectService.preselectOptions(
+                  item.measure_unit,
+                  categories
+                );
+              }
+
+              this.getMOQ.push(new FormGroup({
+                moq: new FormControl(item.moq, [Validators.required]),
+                measure_unit: new FormControl(preselectMeasureUnit),
+                notes: new FormControl(item.notes),
+                stage: new FormControl(null)
+              }));
+            });
+          }
+
+          // printing_method
+          if (this.formData.printing_method && this.formData.printing_method.length) {
+            this.printingMethodAvailableFieldsList = JSON.parse(JSON.stringify(this.formData.printing_method))
+              .filter((item) => {
+                item.values = item.values.filter((el) => (typeof el === 'string') ? el : false);
+                return item;
+              })
+              .map((item) => {
+                item.values = item.values.map((title) => {
+                  return this.printingAvailableMethodList.find((obj) => obj.title === title);
+                });
+                return item;
+              })
+              .filter((item) => {
+                item.values = item.values.filter((el) => (el) ? el : false);
+                return (item.values.length > 0);
+              });
+
+            // If array is empty, set first item
+            if (!this.printingMethodAvailableFieldsList.length) {
+              this.printingMethodAvailableFieldsList.push({ values: [], stage: null });
+            }
+          }
+
+          // available_territories
+          if (this.formData.available_territories && this.formData.available_territories.length) {
+            this.availableInThisTerritoriesFieldsList = JSON.parse(JSON.stringify(this.formData.available_territories))
+              .filter((item) => {
+                item.values = item.values.filter((el) => (typeof el === 'string') ? el : false);
+                return item;
+              })
+              .map((item) => {
+                item.values = item.values.map((title) => {
+                  return this.availableInThisTerritoriesList.find((obj) => obj.title === title);
+                });
+                return item;
+              })
+              .filter((item) => {
+                item.values = item.values.filter((el) => (el) ? el : false);
+                return (item.values.length > 0);
+              });
+
+            // If array is empty, set first item
+            if (!this.availableInThisTerritoriesFieldsList.length) {
+              this.availableInThisTerritoriesFieldsList.push({ values: [], stage: null });
+            }
+          }
+
+          // SET additionalFeaturesFieldList
+          if (this.formData.additional_features.length > 0 && this.additionalFeaturesList.length > 0) {
+            this.additionalFeaturesFieldList = JSON.parse(JSON.stringify(this.formData.additional_features))
+              .filter((item) => {
+                item.ids = item.ids.filter((el) => (typeof el === 'number') ? el : false);
+                return item;
+              })
+              .map((item) => {
+                item.ids = item.ids.map((id) => {
+                  return this.additionalFeaturesList.find((obj) => obj.id === id);
+                });
+                return item;
+              })
+              .filter((item) => {
+                item.ids = item.ids.filter((el) => (el) ? el : false);
+                return (item.ids.length > 0);
+              });
+
+            // If array is empty, set first item
+            if (!this.additionalFeaturesFieldList.length) {
+              this.additionalFeaturesFieldList.push({ ids: [], stage: null, mandatory: false });
+            }
+          }
+
+          // Set family
+          this.familySelectedItems = this.multiSelectService.preselectOptions(
+            this.formData.family,
+            categories
+          );
+
+          // Set stage
+          this.stageSelectedItems = this.stageList.filter((item) => item.id === this.formData.stage);
+
+          this.setFamilyStatus();
+          this.setStageStatus();
+          this.preselectCertificates(this.formData.certifications); // Old certifications
+          this.preselectCertificatesArray(this.formData.certificates);
+        } else {
+          // Default values
+          this.productForm?.get('display_priority')?.setValue([5], { emitEvent: false });
+        }
+      }
       );
   }
 
@@ -778,6 +790,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
     );
     data.certifications = this.getSelectedCertificates;
     data.certificates = this.getTransformedCertificates(data?.certificates);
+    data.collaterals = this.collateralsFieldList.filter(collateralsItem => (collateralsItem && collateralsItem.url)); // without empty items
     data.tds = this.tdsFieldList.filter(tdsItem => (tdsItem && tdsItem.url)); // without empty items
     data.msds = this.msdsFieldList.filter(msdsItem => (msdsItem && msdsItem.url)); // without empty items
 
@@ -1089,23 +1102,23 @@ export class AddProductComponent implements OnInit, OnDestroy {
   uploadAllFiles(data: ProductModel) {
     return new Promise((resolve, reject) => {
       const imageQuery = [
-        {key: 'itemType', value: 'product'},
-        {key: 'fileType', value: 'image'},
+        { key: 'itemType', value: 'product' },
+        { key: 'fileType', value: 'image' },
       ];
       const pdfConsQuery = [
-        {key: 'itemType', value: 'product'},
-        {key: 'fileType', value: 'document'},
-        {key: 'elementType', value: 'technical-considerations'},
+        { key: 'itemType', value: 'product' },
+        { key: 'fileType', value: 'document' },
+        { key: 'elementType', value: 'technical-considerations' },
       ];
       const pdfBarrierQuery = [
-        {key: 'itemType', value: 'product'},
-        {key: 'fileType', value: 'document'},
-        {key: 'elementType', value: 'barrier'},
+        { key: 'itemType', value: 'product' },
+        { key: 'fileType', value: 'document' },
+        { key: 'elementType', value: 'barrier' },
       ];
       const pdfPrintabilityQuery = [
-        {key: 'itemType', value: 'product'},
-        {key: 'fileType', value: 'document'},
-        {key: 'elementType', value: 'printability'},
+        { key: 'itemType', value: 'product' },
+        { key: 'fileType', value: 'document' },
+        { key: 'elementType', value: 'printability' },
       ];
       this.fileService
         .uploadAllNewImages(this.newFiles, imageQuery)
@@ -1116,7 +1129,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
           this.fileService
             .uploadAllNewImages(
               this.checkBackendConsideration === true ||
-              !this.getTechnicalConsiderationFile
+                !this.getTechnicalConsiderationFile
                 ? []
                 : [this.getTechnicalConsiderationFile],
               pdfConsQuery
@@ -1129,7 +1142,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
                     description: data.technical_considerations.description,
                   }
                   : this.checkBackendConsideration === true &&
-                  this.getTechnicalConsiderationFile
+                    this.getTechnicalConsiderationFile
                     ? {
                       url: this.getTechnicalConsiderationFile.split('/').pop(),
                       description: data.technical_considerations.description,
@@ -1153,82 +1166,100 @@ export class AddProductComponent implements OnInit, OnDestroy {
                     return tdsItem;
                   });
 
-                  this.uploadAllMsdsFiles(data.msds)
-                    .then((uploadedMsdsFiles: any[]) => {
-                      data.msds = data.msds.map((msdsItem, index) => {
-                        if (uploadedMsdsFiles[index].length > 0) {
-                          msdsItem.url = uploadedMsdsFiles[index][0];
+                  this.uploadAllCollateralsFiles(data.collaterals)
+                    .then((uploadedCollateralsFiles: any[]) => {
+                      data.collaterals = data.collaterals.map((collateralsItem, index) => {
+                        if (uploadedCollateralsFiles[index].length > 0) {
+                          collateralsItem.url = uploadedCollateralsFiles[index][0];
                         } else {
-                          msdsItem.url = (msdsItem.url && typeof msdsItem.url === 'string')
-                            ? msdsItem.url.split('/').pop()
+                          collateralsItem.url = (collateralsItem.url && typeof collateralsItem.url === 'string')
+                            ? collateralsItem.url.split('/').pop()
                             : '';
                         }
 
-                        return msdsItem;
+                        return collateralsItem;
                       });
 
-                      this.fileService
-                        .uploadAllNewImages(
-                          this.checkBackendBarrier === true || !this.getBarrierFile
-                            ? []
-                            : [this.getBarrierFile],
-                          pdfBarrierQuery
-                        )
-                        .then((barrierFile: string[]) => {
-                          data.barrier = (barrierFile.length > 0)
-                            ? {
-                              url: barrierFile[0],
-                              description: data.barrier.description,
+                      this.uploadAllMsdsFiles(data.msds)
+                        .then((uploadedMsdsFiles: any[]) => {
+                          data.msds = data.msds.map((msdsItem, index) => {
+                            if (uploadedMsdsFiles[index].length > 0) {
+                              msdsItem.url = uploadedMsdsFiles[index][0];
+                            } else {
+                              msdsItem.url = (msdsItem.url && typeof msdsItem.url === 'string')
+                                ? msdsItem.url.split('/').pop()
+                                : '';
                             }
-                            : this.checkBackendBarrier === true && this.getBarrierFile
-                              ? {
-                                url: this.getBarrierFile.split('/').pop(),
-                                description: data.barrier.description,
-                              }
-                              : {
-                                url: null,
-                                description: data.barrier.description
-                              };
+
+                            return msdsItem;
+                          });
 
                           this.fileService
                             .uploadAllNewImages(
-                              this.checkBackendPrintability === true || !this.getPrintabilityFile
+                              this.checkBackendBarrier === true || !this.getBarrierFile
                                 ? []
-                                : [this.getPrintabilityFile],
-                              pdfPrintabilityQuery
+                                : [this.getBarrierFile],
+                              pdfBarrierQuery
                             )
-                            .then((printabilityFile: string[]) => {
-                              data.printability = (printabilityFile.length > 0)
+                            .then((barrierFile: string[]) => {
+                              data.barrier = (barrierFile.length > 0)
                                 ? {
-                                  url: printabilityFile[0],
-                                  description: data.printability.description,
+                                  url: barrierFile[0],
+                                  description: data.barrier.description,
                                 }
-                                : this.checkBackendPrintability === true && this.getPrintabilityFile
+                                : this.checkBackendBarrier === true && this.getBarrierFile
                                   ? {
-                                    url: this.getPrintabilityFile.split('/').pop(),
-                                    description: data.printability.description,
+                                    url: this.getBarrierFile.split('/').pop(),
+                                    description: data.barrier.description,
                                   }
                                   : {
                                     url: null,
-                                    description: data.printability.description
+                                    description: data.barrier.description
                                   };
 
-                              this.uploadAllCertificates(data.certifications)
-                                .then((uploadedCertificateFiles: any[]) => {
-                                  data.certifications = data.certifications.map((certificate, index) => {
-                                    if (uploadedCertificateFiles[index].length > 0) {
-                                      certificate.file_url =
-                                        uploadedCertificateFiles[index][0];
-                                    } else {
-                                      certificate.file_url = (certificate.file_url && typeof certificate.file_url === 'string')
-                                        ? certificate.file_url.split('/').pop()
-                                        : null;
+                              this.fileService
+                                .uploadAllNewImages(
+                                  this.checkBackendPrintability === true || !this.getPrintabilityFile
+                                    ? []
+                                    : [this.getPrintabilityFile],
+                                  pdfPrintabilityQuery
+                                )
+                                .then((printabilityFile: string[]) => {
+                                  data.printability = (printabilityFile.length > 0)
+                                    ? {
+                                      url: printabilityFile[0],
+                                      description: data.printability.description,
                                     }
+                                    : this.checkBackendPrintability === true && this.getPrintabilityFile
+                                      ? {
+                                        url: this.getPrintabilityFile.split('/').pop(),
+                                        description: data.printability.description,
+                                      }
+                                      : {
+                                        url: null,
+                                        description: data.printability.description
+                                      };
 
-                                    return certificate;
-                                  });
+                                  this.uploadAllCertificates(data.certifications)
+                                    .then((uploadedCertificateFiles: any[]) => {
+                                      data.certifications = data.certifications.map((certificate, index) => {
+                                        if (uploadedCertificateFiles[index].length > 0) {
+                                          certificate.file_url =
+                                            uploadedCertificateFiles[index][0];
+                                        } else {
+                                          certificate.file_url = (certificate.file_url && typeof certificate.file_url === 'string')
+                                            ? certificate.file_url.split('/').pop()
+                                            : null;
+                                        }
 
-                                  resolve(data);
+                                        return certificate;
+                                      });
+
+                                      resolve(data);
+                                    })
+                                    .catch((err) => {
+                                      reject(err);
+                                    });
                                 })
                                 .catch((err) => {
                                   reject(err);
@@ -1262,9 +1293,9 @@ export class AddProductComponent implements OnInit, OnDestroy {
 
   uploadAllCertificates(certificates: CertificateModel[]) {
     const query = [
-      {key: 'itemType', value: 'product'},
-      {key: 'fileType', value: 'document'},
-      {key: 'elementType', value: 'certificates'},
+      { key: 'itemType', value: 'product' },
+      { key: 'fileType', value: 'document' },
+      { key: 'elementType', value: 'certificates' },
     ];
 
     const files = certificates.map((item) => {
@@ -1283,9 +1314,9 @@ export class AddProductComponent implements OnInit, OnDestroy {
 
   uploadAllTdsFiles(tdsList: TdsModel[]) {
     const pdfTdsQuery = [
-      {key: 'itemType', value: 'product'},
-      {key: 'fileType', value: 'document'},
-      {key: 'elementType', value: 'tds'},
+      { key: 'itemType', value: 'product' },
+      { key: 'fileType', value: 'document' },
+      { key: 'elementType', value: 'tds' },
     ];
 
     const files = tdsList.map((item) => {
@@ -1303,11 +1334,33 @@ export class AddProductComponent implements OnInit, OnDestroy {
     );
   }
 
+  uploadAllCollateralsFiles(collateralsList: CollateralsModel[]) {
+    const pdfCollateralsQuery = [
+      { key: 'itemType', value: 'product' },
+      { key: 'fileType', value: 'document' },
+      { key: 'elementType', value: 'collaterals' },
+    ];
+
+    const files = collateralsList.map((item) => {
+      if (!item.url || typeof item.url === 'string') {
+        return [];
+      } else {
+        return [item.url];
+      }
+    });
+
+    return Promise.all(
+      files.map((file) => {
+        return this.fileService.uploadAllNewImages(file, pdfCollateralsQuery);
+      })
+    );
+  }
+
   uploadAllMsdsFiles(msdsList: TdsModel[]) {
     const pdfMsdsQuery = [
-      {key: 'itemType', value: 'product'},
-      {key: 'fileType', value: 'document'},
-      {key: 'elementType', value: 'msds'},
+      { key: 'itemType', value: 'product' },
+      { key: 'fileType', value: 'document' },
+      { key: 'elementType', value: 'msds' },
     ];
 
     const files = msdsList.map((item) => {
@@ -1326,7 +1379,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
   }
 
   addTdsFile(files: FileList, controlName) {
-    this.productForm.get(controlName).patchValue({url: files[0]});
+    this.productForm.get(controlName).patchValue({ url: files[0] });
   }
 
   deleteTdsFile(controlName) {
@@ -1539,7 +1592,7 @@ export class AddProductComponent implements OnInit, OnDestroy {
 
       if (thicknessControl) {
         const preselectThicknessValue: (number | string)[] = thicknessValue.filter(item => this.availableCertificateThicknessList.find(item2 => item === item2));
-        thicknessControl.setValue(preselectThicknessValue, {emitEvent: false});
+        thicknessControl.setValue(preselectThicknessValue, { emitEvent: false });
       }
 
       return itemControl;
@@ -1608,6 +1661,11 @@ export class AddProductComponent implements OnInit, OnDestroy {
           mandatory: false
         });
         break;
+      case this.selectFieldEnum.collaterals:
+        this.collateralsFieldList.push({
+          url: '',
+        });
+        break;
       case this.selectFieldEnum.tds:
         this.tdsFieldList.push({
           url: '',
@@ -1628,6 +1686,13 @@ export class AddProductComponent implements OnInit, OnDestroy {
           return false;
         }
         this.additionalFeaturesFieldList = this.additionalFeaturesFieldList.filter((item) => (item != itemField));
+        break;
+      case this.selectFieldEnum.collaterals:
+        this.collateralsFieldList = this.collateralsFieldList.filter((item) => (item != itemField));
+        // add default item, when array is empty
+        if (this.collateralsFieldList.length === 0) {
+          this.addField(this.selectFieldEnum.collaterals);
+        }
         break;
       case this.selectFieldEnum.tds:
         this.tdsFieldList = this.tdsFieldList.filter((item) => (item != itemField));

@@ -4,8 +4,15 @@
   <div class="categories-container">
 
     <div class="categories">
-      <button (click)="isActiveFastTrack()">Click Me</button>
-      <div class="list-group main-category" *ngFor="let mainCategory of (categoryTree | async)" style="margin-bottom: 20px;">
+      <div class="col-12" style="padding: 0px;">
+        <div class="col-2 list-group-item rounded-sm shadow-sm toggle" style="margin-bottom: 20px;"
+          (click)="isActiveFastTrack()">
+          <h5 style="margin-bottom: 0px;">{{fastTrackValue}}</h5>
+        </div>
+      </div>
+
+      <div class="list-group main-category" *ngFor="let mainCategory of (categoryTree | async)"
+        style="margin-bottom: 20px;">
         <div class="list-group-item rounded-sm shadow-sm">
           <h5>{{mainCategory.title}}</h5>
           <div class="actions">
@@ -18,8 +25,6 @@
 
 
         <ng-container *ngIf="mainCategory.nestedCategories.length > 0">
-
-
           <div class="list-group" [collapse]="mainCategory.collapsed" [isAnimated]="false"
             *ngFor="let categorySecond of mainCategory.nestedCategories">
             <div class="list-group-item rounded-sm shadow-sm">
@@ -33,14 +38,16 @@
                   (click)="deleteCategory('Category', categorySecond)">
                   <i class="fas fa-trash"></i>
                 </button>
-                <button type="button" class="btn btn-dark" *ngIf="showForMainCategory(mainCategory) || categorySecond.nestedCategories.length > 0 || mainCategory.id === 3"
+                <button type="button" class="btn btn-dark"
+                  *ngIf="showForMainCategory(mainCategory) || categorySecond.nestedCategories.length > 0 || mainCategory.id === 3"
                   (click)="$event.stopPropagation(); categorySecond.collapsed = !categorySecond.collapsed">
                   <i class="fas" [ngClass]="categorySecond.collapsed ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                 </button>
               </div>
             </div>
 
-            <ng-container *ngIf="showForMainCategory(mainCategory) || categorySecond.nestedCategories.length > 0 || mainCategory.id === 3">
+            <ng-container
+              *ngIf="showForMainCategory(mainCategory) || categorySecond.nestedCategories.length > 0 || mainCategory.id === 3">
 
               <div class="list-group" [collapse]="categorySecond.collapsed" [isAnimated]="false"
                 *ngFor="let categoryThird of categorySecond.nestedCategories">
@@ -53,7 +60,8 @@
                     <button type="button" class="btn btn-danger" (click)="deleteCategory('Category', categoryThird)">
                       <i class="fas fa-trash"></i>
                     </button>
-                    <button type="button" class="btn btn-dark" *ngIf="categoryThird.nestedCategories.length > 0 || mainCategory.id === 3"
+                    <button type="button" class="btn btn-dark"
+                      *ngIf="categoryThird.nestedCategories.length > 0 || mainCategory.id === 3"
                       (click)="$event.stopPropagation(); categoryThird.collapsed = !categoryThird.collapsed">
                       <i class="fas" [ngClass]="categoryThird.collapsed ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                     </button>
@@ -70,7 +78,8 @@
                         <button type="button" class="btn btn-info" (click)="editCategory('Category', categoryFourth)">
                           <i class="far fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger" (click)="deleteCategory('Category', categoryFourth)">
+                        <button type="button" class="btn btn-danger"
+                          (click)="deleteCategory('Category', categoryFourth)">
                           <i class="fas fa-trash"></i>
                         </button>
                       </div>
@@ -78,14 +87,16 @@
 
                   </div>
                   <div class="list-group" [collapse]="categoryThird.collapsed" [isAnimated]="false">
-                    <div class="list-group-item rounded-sm shadow-sm add-category" (click)="addCategory('Category', categoryThird)">
+                    <div class="list-group-item rounded-sm shadow-sm add-category"
+                      (click)="addCategory('Category', categoryThird)">
                       <h5>Add new category</h5>
                     </div>
                   </div>
                 </ng-container>
               </div>
               <div class="list-group" [collapse]="categorySecond.collapsed" [isAnimated]="false">
-                <div class="list-group-item rounded-sm shadow-sm add-category" (click)="addCategory('Category', categorySecond)">
+                <div class="list-group-item rounded-sm shadow-sm add-category"
+                  (click)="addCategory('Category', categorySecond)">
                   <h5>Add new category</h5>
                 </div>
               </div>
@@ -96,7 +107,8 @@
 
         <div class="list-group" *ngIf="mainCategory.title !== 'Application'" [collapse]="mainCategory.collapsed"
           [isAnimated]="false">
-          <div class="list-group-item rounded-sm shadow-sm add-category" (click)="addCategory('Category', mainCategory)">
+          <div class="list-group-item rounded-sm shadow-sm add-category"
+            (click)="addCategory('Category', mainCategory)">
             <h5>Add new category</h5>
           </div>
         </div>
@@ -104,17 +116,20 @@
       </div>
 
       <!-- Thickness Tree -->
-      <div class="list-group main-category" style="margin-bottom: 20px;" *ngIf="thicknessTree$ | async as thicknessTree">
+      <div class="list-group main-category" style="margin-bottom: 20px;"
+        *ngIf="thicknessTree$ | async as thicknessTree">
         <div class="list-group-item rounded-sm shadow-sm">
           <h5>{{thicknessTree.title}}</h5>
           <div class="actions">
-            <button type="button" class="btn btn-dark" (click)="$event.stopPropagation(); thicknessTree.collapsed = !thicknessTree.collapsed">
+            <button type="button" class="btn btn-dark"
+              (click)="$event.stopPropagation(); thicknessTree.collapsed = !thicknessTree.collapsed">
               <i class="fas" [ngClass]="thicknessTree.collapsed ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
             </button>
           </div>
         </div>
 
-        <div class="list-group" [collapse]="thicknessTree.collapsed" [isAnimated]="false" *ngFor="let thickness of thicknessTree.nestedThickness">
+        <div class="list-group" [collapse]="thicknessTree.collapsed" [isAnimated]="false"
+          *ngFor="let thickness of thicknessTree.nestedThickness">
           <div class="list-group-item rounded-sm shadow-sm">
             <h5>{{thickness.value}}</h5>
             <div class="actions">

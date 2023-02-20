@@ -38,7 +38,8 @@
                 </div>
                 <div class="row align-items-end">
                   <div class="col-auto">
-                    <div class="stage-block" *ngIf="stageItemInfo" [ngStyle]="{'background-color': 'var(' + stageItemInfo.color + ')', 'margin-top': '15px'}">
+                    <div class="stage-block" *ngIf="stageItemInfo"
+                      [ngStyle]="{'background-color': 'var(' + stageItemInfo.color + ')', 'margin-top': '15px'}">
                       {{stageItemInfo.title}}
                     </div>
                   </div>
@@ -118,15 +119,19 @@
               </div>
             </div>
             <div class="block-application row">
-              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12" *ngIf="( (applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0) ) || applicationInfo.features">
+              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12"
+                *ngIf="( (applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0) ) || applicationInfo.features">
                 <h5>Features</h5>
                 <div *ngIf="applicationInfo.features" [innerHTML]="applicationInfo.features | textareaBullets"></div>
-    
-                <div class="row" *ngIf="(applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0)">
-                  <ng-container *ngFor="let additionalFeatures of additionalFeaturesFilteredList | sortBy:[true]:['stage']">
+
+                <div class="row"
+                  *ngIf="(applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0)">
+                  <ng-container
+                    *ngFor="let additionalFeatures of additionalFeaturesFilteredList | sortBy:[true]:['stage']">
                     <div class="col-12 col-sm-6 col-md-6 xol-lg-6 col-xl-6" *ngIf="additionalFeatures.mandatory">
                       <div class="additionalFeatures-item">
-                        <app-stage-color-picker [stage]="additionalFeatures.stage" disabled="true"></app-stage-color-picker>
+                        <app-stage-color-picker [stage]="additionalFeatures.stage"
+                          disabled="true"></app-stage-color-picker>
                         <div class="item-tree">
                           <div *ngFor="let parent of additionalFeatures.tree">
                             <div class="parent">{{parent.title}}</div>
@@ -139,19 +144,22 @@
                     </div>
                   </ng-container>
                 </div>
-    
+
               </div>
               <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12" *ngIf="applicationInfo.terms_and_limitations">
                 <h5 class="color-warning">Terms and Limitations</h5>
                 <div [innerHTML]="applicationInfo.terms_and_limitations"></div>
               </div>
-              <div class="col-12" *ngIf="(applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0)">
+              <div class="col-12"
+                *ngIf="(applicationInfo.additional_features.length > 0) && (additionalFeaturesFilteredList.length > 0)">
                 <h5>Additional Features</h5>
                 <div class="row">
-                  <ng-container *ngFor="let additionalFeatures of additionalFeaturesFilteredList | sortBy:[true]:['stage']">
+                  <ng-container
+                    *ngFor="let additionalFeatures of additionalFeaturesFilteredList | sortBy:[true]:['stage']">
                     <div class="col-12 col-sm-6 col-md-4 xol-lg-4 col-xl-4" *ngIf="!additionalFeatures.mandatory">
                       <div class="additionalFeatures-item">
-                        <app-stage-color-picker [stage]="additionalFeatures.stage" disabled="true"></app-stage-color-picker>
+                        <app-stage-color-picker [stage]="additionalFeatures.stage"
+                          disabled="true"></app-stage-color-picker>
                         <div class="item-tree">
                           <div *ngFor="let parent of additionalFeatures.tree">
                             <div class="parent">{{parent.title}}</div>
@@ -177,9 +185,17 @@
                 <h5>Positive Experiments</h5>
                 <p class="text_with_enter">{{applicationInfo.positive_experiments}}</p>
               </div>
-              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12" *ngIf="applicationInfo.negative_feedback_to_be_aware_of">
+              <div class="col-xl-6 xol-lg-6 col-md-6 col-sm-12"
+                *ngIf="applicationInfo.negative_feedback_to_be_aware_of">
                 <h5>Negative feedback to be aware of</h5>
                 <p class="text_with_enter">{{applicationInfo.negative_feedback_to_be_aware_of}}</p>
+              </div>
+            </div>
+            <div class="block-documentsection col-12" *ngIf="productInfo.tds && productInfo.tds.length">
+              <h5>Marketing Document</h5>
+              <div class="pdf-file" *ngFor="let tdsItem of productInfo.tds">
+                <i class="fas fa-file-pdf"></i>
+                <a [href]="tdsItem?.url" target="_blank">{{tdsItem?.url.split('/').pop()}}</a>
               </div>
             </div>
             <div class="block-product row" *ngIf="productInfo">
@@ -217,18 +233,34 @@
                 </div>
               </div>
             </div>
-            <div class="section row" *ngIf="industrialCertificateList.length || homeCertificateList.length || applicationInfo.rtf">
+            <div class="block-documentsection col-12" *ngIf="productInfo.tds && productInfo.tds.length">
+              <h5>Sales Collaterals</h5>
+              <div class="pdf-file" *ngFor="let tdsItem of productInfo.tds">
+                <i class="fas fa-file-pdf"></i>
+                <a [href]="tdsItem?.url" target="_blank">{{tdsItem?.url.split('/').pop()}}</a>
+              </div>
+            </div>
+            <!-- <div class="block-documentsection col-12" *ngIf="productInfo.tds && productInfo.tds.length">
+              <h5>Certifications</h5>
+              <div class="pdf-file" *ngFor="let tdsItem of productInfo.tds">
+                <i class="fas fa-file-pdf"></i>
+                <a [href]="tdsItem?.url" target="_blank">{{tdsItem?.url.split('/').pop()}}</a>
+              </div>
+            </div> -->
+            <div class="section row"
+              *ngIf="industrialCertificateList.length || homeCertificateList.length || applicationInfo.rtf">
               <h5 class="col-12">Compostability</h5>
-    
+
               <div class="col-12" *ngIf="applicationInfo.rtf">
                 <!-- <h5>RTF</h5> -->
                 <p [innerHTML]="applicationInfo.rtf"></p>
               </div>
-    
+
               <div class="col-12 certificates" *ngIf="industrialCertificateList.length">
                 <h5>Industrial</h5>
                 <div class="row">
-                  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 certificate" *ngFor="let certificate of industrialCertificateList">
+                  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 certificate"
+                    *ngFor="let certificate of industrialCertificateList">
                     <div class="card">
                       <div class="card-body">
                         <h5 class="card-title" *ngIf="certificate?.title">{{certificate?.title}}</h5>
@@ -237,14 +269,15 @@
                             <img [src]="certificate?.logo?.url" alt="">
                           </div>
                           <div class="certificate-header-title">
-                            
+
                             <div class="pdf-file" *ngIf="certificate?.file_url">
                               <i class="fas fa-file-pdf"></i>
                               <a [href]="certificate?.file_url" target="_blank">Download certificate</a>
                             </div>
                             <div class="pdf-file" *ngIf="certificate?.download">
                               <i class="fas fa-file-image"></i>
-                              <a href="#" (click)="$event.preventDefault(); openCertificateFiles(certificate)">Download files</a>
+                              <a href="#" (click)="$event.preventDefault(); openCertificateFiles(certificate)">Download
+                                files</a>
                             </div>
                           </div>
                         </div>
@@ -256,11 +289,12 @@
                   </div>
                 </div>
               </div>
-    
+
               <div class="col-12 certificates" *ngIf="homeCertificateList.length">
                 <h5>Home</h5>
                 <div class="row">
-                  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 certificate" *ngFor="let certificate of homeCertificateList">
+                  <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 certificate"
+                    *ngFor="let certificate of homeCertificateList">
                     <div class="card">
                       <div class="card-body">
                         <h5 class="card-title" *ngIf="certificate?.title">{{certificate?.title}}</h5>
@@ -269,14 +303,15 @@
                             <img [src]="certificate?.logo?.url" alt="">
                           </div>
                           <div class="certificate-header-title">
-                            
+
                             <div class="pdf-file" *ngIf="certificate?.file_url">
                               <i class="fas fa-file-pdf"></i>
                               <a [href]="certificate?.file_url" target="_blank">Download certificate</a>
                             </div>
                             <div class="pdf-file" *ngIf="certificate?.download">
                               <i class="fas fa-file-image"></i>
-                              <a href="#" (click)="$event.preventDefault(); openCertificateFiles(certificate)">Download files</a>
+                              <a href="#" (click)="$event.preventDefault(); openCertificateFiles(certificate)">Download
+                                files</a>
                             </div>
                           </div>
                         </div>
@@ -298,7 +333,7 @@
             </div>
             <div class="section block-customers row" *ngIf="applicationInfo.available_marketing_samples.length > 0">
               <h5 class="col-12">Available Marketing Samples</h5>
-    
+
               <div class="customers">
                 <div class="customer" *ngFor="let ams of applicationInfo.available_marketing_samples">
                   <div class="customer-image">
@@ -307,11 +342,11 @@
                   <div class="customer-description" [innerHTML]="ams.description"></div>
                 </div>
               </div>
-    
+
             </div>
             <div class="section block-customers row" *ngIf="applicationInfo.customers.length > 0">
               <h5 class="col-12">Customers</h5>
-    
+
               <div class="customers">
                 <div class="customer" *ngFor="let customer of applicationInfo.customers">
                   <div class="customer-image">
@@ -320,14 +355,16 @@
                   <div class="customer-description" [innerHTML]="customer.description"></div>
                 </div>
               </div>
-    
+
             </div>
           </tab>
 
-          <tab *ngIf="showFastTrack" heading="Fast Track application" customClass="custom-tab" (selectTab)="selectTab($event)">
-            <app-application-fast-track [applicationInfo]="applicationInfo" *ngIf="applicationInfo"></app-application-fast-track>
+          <tab *ngIf="showFastTrack" heading="Fast Track application" customClass="custom-tab"
+            (selectTab)="selectTab($event)">
+            <app-application-fast-track [applicationInfo]="applicationInfo"
+              *ngIf="applicationInfo"></app-application-fast-track>
           </tab>
-        </tabset>        
+        </tabset>
       </div>
 
       <div class="card-footer" appIsAdmin>

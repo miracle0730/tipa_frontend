@@ -1,7 +1,7 @@
 <div id="rfq" class="rfq-container card">
 
   <tabset #staticTabs justified="true">
-    <tab heading="Fast Track" customClass="custom-tab">
+    <tab *ngIf="showFastTrack" heading="Fast Track" customClass="custom-tab">
       <app-fast-track [opportunitySection]="opportunitySection" [opportunityId]="opportunityId"></app-fast-track>
     </tab>
     

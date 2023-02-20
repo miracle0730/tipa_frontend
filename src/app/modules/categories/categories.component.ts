@@ -49,6 +49,7 @@ export class CategoriesComponent implements OnInit {
   public mainCategoryNames = AppConstants.MainCategoryNames;
   public categories: CategoryModel[] = [];
   public isShowFastTrack: boolean;
+  public fastTrackValue: string;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -77,6 +78,7 @@ export class CategoriesComponent implements OnInit {
         console.log(categoryState);
         this.categories = _.cloneDeep(categoryState.categories);
         this.isShowFastTrack = categoryState.isShowFastTrack;
+        this.fastTrackValue = this.isShowFastTrack ? "Hide fast track" : "Show fast track";
         return this.transformCategoriesToSideMenu(categoryState.categories);
       }),
       map((sideMenuArray: TreeCategory[]) => {
@@ -289,6 +291,7 @@ export class CategoriesComponent implements OnInit {
 
   isActiveFastTrack() {
     this.isShowFastTrack = !this.isShowFastTrack;
+    this.fastTrackValue = this.isShowFastTrack ? "Hide fast track" : "Show fast track";
     this.store.dispatch(new isShowTrack(this.isShowFastTrack));
   }
 }

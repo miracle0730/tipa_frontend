@@ -12,6 +12,9 @@
     justify-content: space-between;
     flex-wrap: wrap;
 
+    .toggle {
+      cursor: pointer;
+    }
     .main-category {
       display: flex;
       flex-direction: column;

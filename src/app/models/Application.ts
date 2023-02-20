@@ -28,6 +28,7 @@ export interface ApplicationModel {
   dieline: any;
   customers: CustomerModel[];
   rtf: string;
+  collaterals: CertificationfilesModel[];
   certifications: CertificateModel[];
   certificates: CertificatesModel[];
   streams: StreamModel[];
@@ -55,6 +56,10 @@ export interface ApplicationModel {
 export interface CustomerModel {
   images: any[];
   description: string;
+}
+
+export interface CertificationfilesModel {
+  url: any; // string | File
 }
 
 export interface FtDimensionsModel {

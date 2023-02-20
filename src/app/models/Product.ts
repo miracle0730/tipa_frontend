@@ -27,6 +27,7 @@ export interface ProductModel {
   printability: any;
   tds: TdsModel[];
   msds: MsdsModel[];
+  collaterals: CollateralsModel[];
   moq: MOQModel[];
   rtf: string;
   certifications: CertificateModel[];
@@ -93,6 +94,10 @@ export interface TdsModel {
 }
 
 export interface MsdsModel {
+  url: any; // string | File
+}
+
+export interface CollateralsModel {
   url: any; // string | File
 }
 

@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy, ViewChild,} from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, } from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
@@ -7,11 +7,11 @@ import {
   Validators,
 } from '@angular/forms';
 
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 // ngx-bootstrap
-import {BsModalRef} from 'ngx-bootstrap/modal';
-import {TabsetComponent, TabDirective} from 'ngx-bootstrap/tabs';
+import { BsModalRef } from 'ngx-bootstrap/modal';
+import { TabsetComponent, TabDirective } from 'ngx-bootstrap/tabs';
 
 import {
   ApplicationModel,
@@ -21,6 +21,7 @@ import {
   ImageModel,
   ThicknessModel,
   CertificateModel,
+  CollateralsModel,
   StreamModel,
   FtDimensionsModel,
   FtItemsModel,
@@ -38,12 +39,12 @@ import {
   ThicknessService,
 } from '@services';
 
-import {HttpErrorResponse} from '@angular/common/http';
-import {IDropdownSettings} from 'ng-multiselect-dropdown';
-import {distinctUntilChanged, map} from 'rxjs/operators';
-import {Subscription} from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { distinctUntilChanged, map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
-import {Store} from '@ngrx/store';
+import { Store } from '@ngrx/store';
 
 import * as fromApp from '@store/app.reducer';
 import * as ProductActions from '@store/product/product.actions';
@@ -51,7 +52,7 @@ import * as ApplicationActions from '@store/application/application.actions';
 import * as ThicknessActions from '@store/thickness/thickness.actions';
 import * as _ from 'lodash';
 
-import {AppConstants} from '@core/app.constants';
+import { AppConstants } from '@core/app.constants';
 
 enum SelectNextEnum {
   productFamilySelect = 1,
@@ -68,6 +69,7 @@ enum SelectFieldEnum {
   height = 3,
   additionalFeatures = 4,
   dimensions = 5,
+  collaterals = 6,
 }
 
 interface PhotosResponse {
@@ -110,7 +112,7 @@ export interface FtItemsGroupedModel {
   styleUrls: ['./add-application.component.scss'],
 })
 export class AddApplicationComponent implements OnInit, OnDestroy {
-  @ViewChild('staticTabs', {static: false}) staticTabs: TabsetComponent;
+  @ViewChild('staticTabs', { static: false }) staticTabs: TabsetComponent;
 
   private productsSubscription: Subscription;
   private categoriesSubscription: Subscription;
@@ -143,14 +145,14 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
   // Thickness
   public thicknessList: any[] = [];
   public thicknessFieldList: ThicknessFieldItem[] = [
-    {values: [], stage: null}
+    { values: [], stage: null }
   ];
   public ftThicknessFieldList: ThicknessFieldItem[] = [];
 
   // AdditionalFeatures
   public additionalFeaturesList: any[] = [];
   public additionalFeaturesFieldList: AdditionalFeaturesFieldItem[] = [
-    {ids: [], stage: null, mandatory: false}
+    { ids: [], stage: null, mandatory: false }
   ];
   public ftAdditionalFeaturesFieldList: AdditionalFeaturesFieldItem[] = [];
 
@@ -159,20 +161,23 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
   // Dimensions
   public ftDimensionsFieldList: FtDimensionsModel[] = [
-    {size: 1, width: null, height: null, flap: null, gusset: null, dieline_url: ''}
+    { size: 1, width: null, height: null, flap: null, gusset: null, dieline_url: '' }
   ];
-
+  // collaterals
+  public collateralsFieldList: CollateralsModel[] = [
+    { url: '', }
+  ];
   // Fast Track Items
   public ftItemsListGrouped: FtItemsGroupedModel[] = [];
 
   // Width
   public widthFieldList: WidthFieldItem[] = [
-    {stage: null, min: null, max: null}
+    { stage: null, min: null, max: null }
   ];
 
   // Height
   public heightFieldList: WidthFieldItem[] = [
-    {stage: null, min: null, max: null}
+    { stage: null, min: null, max: null }
   ];
 
   // Streams
@@ -237,7 +242,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
   // PrintingAvailableMethodList
   public printingAvailableMethodList: CategoryModel[] = [];
   public printingMethodAvailableFieldsList: ThicknessFieldItem[] = [
-    {values: [], stage: null}
+    { values: [], stage: null }
   ];
 
   public files: any[] = [];
@@ -305,6 +310,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
         url: new FormControl(''),
       }),
       customers: new FormArray([]),
+      collaterals: new FormControl(null),
       rtf: new FormControl(''),
       certifications: new FormArray([]),
       certificates: new FormArray([this.getInitialCertificatesItem()]),
@@ -330,10 +336,10 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
     this.store.dispatch(new ProductActions.FetchAllProducts());
 
     this.store
-    .select('categories')
-    .subscribe((categoryState) => {
-      this.showFastTrack = categoryState.isShowFastTrack;
-    });
+      .select('categories')
+      .subscribe((categoryState) => {
+        this.showFastTrack = categoryState.isShowFastTrack;
+      });
 
     this.getCertificatesArray.valueChanges
       .pipe(distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)))
@@ -461,7 +467,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
   }
 
   getCategories() {
-      this.segmentRequired = true;
+    this.segmentRequired = true;
     this.categoriesSubscription = this.store
       .select('categories')
       .pipe(map((categoryState) => categoryState.categories))
@@ -556,6 +562,11 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
             partner_name: (preselectPartnerName && Array.isArray(preselectPartnerName)) ? preselectPartnerName : [],
           });
 
+          // collaterals
+          this.collateralsFieldList = (this.formData && this.formData.collaterals && this.formData.collaterals.length)
+            ? _.cloneDeep(this.formData.collaterals)
+            : [{ url: '' }];
+
           // certificates
           this.preselectCertificatesArray(this.formData.certificates);
 
@@ -629,7 +640,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
             // If array is empty, set first item
             if (!this.additionalFeaturesFieldList.length) {
-              this.additionalFeaturesFieldList.push({ids: [], stage: null, mandatory: false});
+              this.additionalFeaturesFieldList.push({ ids: [], stage: null, mandatory: false });
             }
           }
           if (this.formData.fast_track.additional_features.length > 0) {
@@ -671,7 +682,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
             // If array is empty, set first item
             if (!this.printingMethodAvailableFieldsList.length) {
-              this.printingMethodAvailableFieldsList.push({values: [], stage: null});
+              this.printingMethodAvailableFieldsList.push({ values: [], stage: null });
             }
           }
           // SET Dimensions
@@ -686,7 +697,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
           }
         } else {
           // Default values
-          this.applicationForm?.get('display_priority')?.setValue([5], {emitEvent: false});
+          this.applicationForm?.get('display_priority')?.setValue([5], { emitEvent: false });
         }
       });
 
@@ -716,7 +727,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
           let foundStream = this.formData.streams.find(stream => item.type === stream.type);
 
           return (foundStream)
-            ? {...item, ...foundStream} // merged stream
+            ? { ...item, ...foundStream } // merged stream
             : item; // empty stream
         });
     }
@@ -767,7 +778,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
       .filter(item => this.availableLevelOfClearanceList.find(elem => item?.id === elem?.id));
 
     if (levelOfClearanceControl) {
-      levelOfClearanceControl.setValue(preselectLevelOfClearanceValue, {emitEvent: false});
+      levelOfClearanceControl.setValue(preselectLevelOfClearanceValue, { emitEvent: false });
       levelOfClearanceControl.markAsPristine();
       levelOfClearanceControl.markAsTouched();
     }
@@ -986,11 +997,11 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
     if (fastTrackControl) {
       // RESET application_number
       let applicationNumberControl = fastTrackControl.get('application_number');
-      (applicationNumberControl) ? applicationNumberControl.setValue('', {emitEvent: false}) : null;
+      (applicationNumberControl) ? applicationNumberControl.setValue('', { emitEvent: false }) : null;
 
       // RESET thickness
       let thicknessControl = fastTrackControl.get('thickness');
-      (thicknessControl) ? thicknessControl.setValue([], {emitEvent: false}) : null;
+      (thicknessControl) ? thicknessControl.setValue([], { emitEvent: false }) : null;
       this.ftThicknessFieldList = this.ftThicknessFieldList.map(item => {
         item.values = [];
         return item;
@@ -998,11 +1009,11 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
       // RESET number_of_printing_colors
       let numberOfPrintingColorsControl = fastTrackControl.get('number_of_printing_colors');
-      (numberOfPrintingColorsControl) ? numberOfPrintingColorsControl.setValue([], {emitEvent: false}) : null;
+      (numberOfPrintingColorsControl) ? numberOfPrintingColorsControl.setValue([], { emitEvent: false }) : null;
 
       // RESET additional_features
       let additionalFeaturesControl = fastTrackControl.get('additional_features');
-      (additionalFeaturesControl) ? additionalFeaturesControl.setValue([], {emitEvent: false}) : null;
+      (additionalFeaturesControl) ? additionalFeaturesControl.setValue([], { emitEvent: false }) : null;
       this.ftAdditionalFeaturesFieldList = this.ftAdditionalFeaturesFieldList.map(item => {
         item.ids = [];
         item.mandatory = false;
@@ -1011,18 +1022,18 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
       // RESET production_site
       let productionSiteControl = fastTrackControl.get('production_site');
-      (productionSiteControl) ? productionSiteControl.setValue('', {emitEvent: false}) : null;
+      (productionSiteControl) ? productionSiteControl.setValue('', { emitEvent: false }) : null;
 
       // RESET dimensions
       let dimensionsControl = fastTrackControl.get('dimensions');
-      (dimensionsControl) ? dimensionsControl.setValue([], {emitEvent: false}) : null;
+      (dimensionsControl) ? dimensionsControl.setValue([], { emitEvent: false }) : null;
       this.ftDimensionsFieldList = [
-        {size: 1, width: null, height: null, flap: null, gusset: null, dieline_url: ''}
+        { size: 1, width: null, height: null, flap: null, gusset: null, dieline_url: '' }
       ];
 
       // RESET items
       let itemsControl = fastTrackControl.get('items');
-      (itemsControl) ? itemsControl.setValue([], {emitEvent: false}) : null;
+      (itemsControl) ? itemsControl.setValue([], { emitEvent: false }) : null;
       this.ftItemsListGrouped = [];
     }
   }
@@ -1059,7 +1070,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
             let generateItem: FtItemsModel = {
               visible: false,
               code: `FT${copyAppNumber}${dimensionItem.size}${thicknessItem.value}${colorItem}`, // code must be unique -> FT[Application Number][Size Number from Demensions][Thickness value][Number of Colors]
-              dimension: {...dimensionItem},
+              dimension: { ...dimensionItem },
               thickness: thicknessItem.value,
               color: colorItem,
               moq: null,
@@ -1376,6 +1387,11 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
           dieline_url: ''
         });
         break;
+      case this.selectFieldEnum.collaterals:
+        this.collateralsFieldList.push({
+          url: '',
+        });
+        break;
     }
   }
 
@@ -1440,6 +1456,13 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
           });
 
         break;
+      case this.selectFieldEnum.collaterals:
+        this.collateralsFieldList = this.collateralsFieldList.filter((item) => (item != itemField));
+        // add default item, when array is empty
+        if (this.collateralsFieldList.length === 0) {
+          this.addField(this.selectFieldEnum.collaterals);
+        }
+        break;
     }
   }
 
@@ -1465,14 +1488,15 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
         item.values = item.values.map((obj) => obj.title);
         return item;
       });
+    data.collaterals = this.collateralsFieldList.filter(collateralsItem => (collateralsItem && collateralsItem.url)); // without empty items
 
     const partnerName: any[] = data.partner_name;
     data.partner_name = this.multiSelectService.transformSelectData(
       partnerName
     );
 
-    const uploadData =  () => {
-       this.uploadAllPhotosAndDocuments(data)
+    const uploadData = () => {
+      this.uploadAllPhotosAndDocuments(data)
         .then((imagesData: ApplicationModel) => {
           imagesData.draft = draft;
           if (this.isCreateModal) {
@@ -1563,9 +1587,9 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
   uploadAvailableMarketingSamplePhoto() {
     const query = [
-      {key: 'itemType', value: 'application'},
-      {key: 'fileType', value: 'image'},
-      {key: 'elementType', value: 'available_marketing_samples'},
+      { key: 'itemType', value: 'application' },
+      { key: 'fileType', value: 'image' },
+      { key: 'elementType', value: 'available_marketing_samples' },
     ];
     const copyAvailableMarketingSamplePhotos = this.availableMarketingSamplePhotos.map((item) => {
       return !item ? [] : item.newImages;
@@ -1579,9 +1603,9 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
   uploadAllFtDimensionsFiles(list: FtDimensionsModel[]) {
     const pdfDimensionsQuery = [
-      {key: 'itemType', value: 'application'},
-      {key: 'fileType', value: 'document'},
-      {key: 'elementType', value: 'dieline'},
+      { key: 'itemType', value: 'application' },
+      { key: 'fileType', value: 'document' },
+      { key: 'elementType', value: 'dieline' },
     ];
 
     const files = list.map((item) => {
@@ -1650,9 +1674,9 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
   uploadAllStreams(streams: StreamModel[]) {
     const query = [
-      {key: 'itemType', value: 'application'},
-      {key: 'fileType', value: 'document'},
-      {key: 'elementType', value: 'streams'},
+      { key: 'itemType', value: 'application' },
+      { key: 'fileType', value: 'document' },
+      { key: 'elementType', value: 'streams' },
     ];
 
     const files = streams.map((item) => {
@@ -1665,6 +1689,29 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
     return Promise.all(
       files.map((file) => {
         return this.fileService.uploadAllNewImages(file, query);
+      })
+    );
+  }
+
+
+  uploadAllCollateralsFiles(collateralsList: CollateralsModel[]) {
+    const pdfCollateralsQuery = [
+      { key: 'itemType', value: 'product' },
+      { key: 'fileType', value: 'document' },
+      { key: 'elementType', value: 'collaterals' },
+    ];
+
+    const files = collateralsList.map((item) => {
+      if (!item.url || typeof item.url === 'string') {
+        return [];
+      } else {
+        return [item.url];
+      }
+    });
+
+    return Promise.all(
+      files.map((file) => {
+        return this.fileService.uploadAllNewImages(file, pdfCollateralsQuery);
       })
     );
   }
@@ -1688,9 +1735,9 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
   uploadCustomerPhoto() {
     const query = [
-      {key: 'itemType', value: 'application'},
-      {key: 'fileType', value: 'image'},
-      {key: 'elementType', value: 'customers'},
+      { key: 'itemType', value: 'application' },
+      { key: 'fileType', value: 'image' },
+      { key: 'elementType', value: 'customers' },
     ];
     const copyCustomerPhotos = this.customerPhotos.map((item) => {
       return !item ? [] : item.newImages;
@@ -1705,18 +1752,18 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
   uploadAllPhotosAndDocuments(data: ApplicationModel) {
     return new Promise((resolve, reject) => {
       const imageQuery = [
-        {key: 'itemType', value: 'application'},
-        {key: 'fileType', value: 'image'},
+        { key: 'itemType', value: 'application' },
+        { key: 'fileType', value: 'image' },
       ];
       const pdfQuery = [
-        {key: 'itemType', value: 'application'},
-        {key: 'fileType', value: 'document'},
-        {key: 'elementType', value: 'dieline'},
+        { key: 'itemType', value: 'application' },
+        { key: 'fileType', value: 'document' },
+        { key: 'elementType', value: 'dieline' },
       ];
       const pdfConsQuery = [
-        {key: 'itemType', value: 'application'},
-        {key: 'fileType', value: 'document'},
-        {key: 'elementType', value: 'technical-considerations'},
+        { key: 'itemType', value: 'application' },
+        { key: 'fileType', value: 'document' },
+        { key: 'elementType', value: 'technical-considerations' },
       ];
 
       // upload main images
@@ -1729,7 +1776,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
           this.fileService
             .uploadAllNewImages(
               this.checkBackendConsideration === true ||
-              !this.getTechnicalConsiderationFile
+                !this.getTechnicalConsiderationFile
                 ? []
                 : [this.getTechnicalConsiderationFile],
               pdfConsQuery
@@ -1742,7 +1789,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
                     description: data.technical_considerations.description,
                   }
                   : this.checkBackendConsideration === true &&
-                  this.getTechnicalConsiderationFile
+                    this.getTechnicalConsiderationFile
                     ? {
                       url: this.getTechnicalConsiderationFile.split('/').pop(),
                       description: data.technical_considerations.description,
@@ -1762,9 +1809,9 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
                 .then((dielineImages: string[]) => {
                   data.dieline =
                     dielineImages.length > 0
-                      ? {url: dielineImages[0]}
+                      ? { url: dielineImages[0] }
                       : this.checkBackendDieline === true && this.getDielineFile
-                        ? {url: this.getDielineFile.split('/').pop()}
+                        ? { url: this.getDielineFile.split('/').pop() }
                         : null;
 
                   // upload customers images
@@ -1773,7 +1820,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
                       this.customersFiles.forEach((oldImages: any, index) => {
                         data.customers[
                           index
-                          ].images = this.fileService.filterImageArray(
+                        ].images = this.fileService.filterImageArray(
                           oldImages.images
                         );
                       });
@@ -1789,7 +1836,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
                           this.availableMarketingSampleFiles.forEach((oldImages: any, index) => {
                             data.available_marketing_samples[
                               index
-                              ].images = this.fileService.filterImageArray(
+                            ].images = this.fileService.filterImageArray(
                               oldImages.images
                             );
                           });
@@ -1799,19 +1846,38 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
                             }
                           });
 
-                          // Upload streams files
-                          this.uploadAllStreams(this.streamList)
-                            .then((uploadedStreamFiles: any[]) => {
-                              data.streams = this.getUploadedStreamsData(this.streamList, uploadedStreamFiles);
+                          //Upload certifications files
+                          this.uploadAllCollateralsFiles(data.collaterals)
+                            .then((uploadedCollateralsFiles: any[]) => {
+                              data.collaterals = data.collaterals.map((collateralsItem, index) => {
+                                if (uploadedCollateralsFiles[index].length > 0) {
+                                  collateralsItem.url = uploadedCollateralsFiles[index][0];
+                                } else {
+                                  collateralsItem.url = (collateralsItem.url && typeof collateralsItem.url === 'string')
+                                    ? collateralsItem.url.split('/').pop()
+                                    : '';
+                                }
 
-                              // Upload Fast Track dimensions files
-                              this.uploadAllFtDimensionsFiles(this.ftDimensionsFieldList)
-                                .then((uploadedFtDimensionsFiles: any[]) => {
-                                  data.fast_track.dimensions = this.getUploadedFtDimensionsData(this.ftDimensionsFieldList, uploadedFtDimensionsFiles);
-                                  // Important -> SET Fast Track Items, after uploaded dimensions
-                                  data.fast_track.items = this.getUploadedFtItemsData(this.ftItemsListGrouped, data.fast_track.dimensions);
+                                return collateralsItem;
+                              });
 
-                                  resolve(data);
+                              // Upload streams files
+                              this.uploadAllStreams(this.streamList)
+                                .then((uploadedStreamFiles: any[]) => {
+                                  data.streams = this.getUploadedStreamsData(this.streamList, uploadedStreamFiles);
+
+                                  // Upload Fast Track dimensions files
+                                  this.uploadAllFtDimensionsFiles(this.ftDimensionsFieldList)
+                                    .then((uploadedFtDimensionsFiles: any[]) => {
+                                      data.fast_track.dimensions = this.getUploadedFtDimensionsData(this.ftDimensionsFieldList, uploadedFtDimensionsFiles);
+                                      // Important -> SET Fast Track Items, after uploaded dimensions
+                                      data.fast_track.items = this.getUploadedFtItemsData(this.ftItemsListGrouped, data.fast_track.dimensions);
+
+                                      resolve(data);
+                                    })
+                                    .catch((err) => {
+                                      reject(err);
+                                    });
                                 })
                                 .catch((err) => {
                                   reject(err);
@@ -1880,7 +1946,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
   }
 
   addDielineFile(files: FileList, controlName) {
-    this.applicationForm.get(controlName).patchValue({url: files[0]});
+    this.applicationForm.get(controlName).patchValue({ url: files[0] });
   }
 
   deleteDielineFile(controlName) {
@@ -2275,7 +2341,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
 
       if (thicknessControl) {
         let preselectThicknessValue: (number | string)[] = thicknessValue.filter(item => this.availableCertificateThicknessList.find(item2 => item === item2));
-        thicknessControl.setValue(preselectThicknessValue, {emitEvent: false});
+        thicknessControl.setValue(preselectThicknessValue, { emitEvent: false });
       }
 
       return itemControl;
@@ -2391,13 +2457,13 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
     if (correctValue.length === 0) {
       ftApplicationNumberControl.setErrors(null);
     } else if (correctValue.length === 1 || correctValue === '00') {
-      ftApplicationNumberControl.setErrors({notFull: true});
+      ftApplicationNumberControl.setErrors({ notFull: true });
     } else if (correctValue.length === 2) {
       if (typeof hasResultAppNumber === 'boolean') { // when we have result and do not need request
         if (hasResultAppNumber === true) { // AppNumber is available
           ftApplicationNumberControl.setErrors(null);
         } else { // AppNumber is not available
-          ftApplicationNumberControl.setErrors({notAvailable: true});
+          ftApplicationNumberControl.setErrors({ notAvailable: true });
         }
       } else { // default
         let appId: number = (this.formData && this.formData.id) ? this.formData.id : null;
@@ -2405,7 +2471,7 @@ export class AddApplicationComponent implements OnInit, OnDestroy {
           res => {
             ftApplicationNumberControl.setErrors(null); // AppNumber is available
           }, err => {
-            ftApplicationNumberControl.setErrors({notAvailable: true}); // AppNumber is not available
+            ftApplicationNumberControl.setErrors({ notAvailable: true }); // AppNumber is not available
           });
       }
     }

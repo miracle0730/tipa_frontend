@@ -18,40 +18,36 @@
               <div class="row">
                 <div class="form-group col-12">
                   <label>Type *</label>
-                  <ng-multiselect-dropdown class="custom-multiselect" placeholder="Type"
-                                           [settings]="dropdownSettings" [ngModelOptions]="{standalone: true}"
-                                           [data]="applicationTypeList" [(ngModel)]="applicationTypeSelectedItems"
-                                           (onSelect)="setNextDropdownValues($event, 6);"
-                                           (onSelectAll)="setNextDropdownValues($event, 6);"
-                                           (onDeSelect)="setNextDropdownValues(null, 6);"
-                                           [ngClass]="applicationForm.get('type').invalid && applicationForm.get('type').touched ? 'multiselect-invalid' : ''">
+                  <ng-multiselect-dropdown class="custom-multiselect" placeholder="Type" [settings]="dropdownSettings"
+                    [ngModelOptions]="{standalone: true}" [data]="applicationTypeList"
+                    [(ngModel)]="applicationTypeSelectedItems" (onSelect)="setNextDropdownValues($event, 6);"
+                    (onSelectAll)="setNextDropdownValues($event, 6);" (onDeSelect)="setNextDropdownValues(null, 6);"
+                    [ngClass]="applicationForm.get('type').invalid && applicationForm.get('type').touched ? 'multiselect-invalid' : ''">
                   </ng-multiselect-dropdown>
                   <div class="invalid-multiselect-message"
-                       *ngIf="applicationForm.get('type').invalid && applicationForm.get('type').touched">
+                    *ngIf="applicationForm.get('type').invalid && applicationForm.get('type').touched">
                     Type is required
                   </div>
                 </div>
                 <div class="form-group col-12">
                   <label>Stage *</label>
                   <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Stage'"
-                                           [settings]="dropdownSettings" [ngModelOptions]="{standalone: true}"
-                                           [data]="availableStageList" [(ngModel)]="stageSelectedItems"
-                                           (onSelect)="setNextDropdownValues($event, 5);"
-                                           (onSelectAll)="setNextDropdownValues($event, 5);"
-                                           (onDeSelect)="setNextDropdownValues(null, 5);"
-                                           [ngClass]="applicationForm.get('stage').invalid && applicationForm.get('stage').touched ? 'multiselect-invalid' : ''">
+                    [settings]="dropdownSettings" [ngModelOptions]="{standalone: true}" [data]="availableStageList"
+                    [(ngModel)]="stageSelectedItems" (onSelect)="setNextDropdownValues($event, 5);"
+                    (onSelectAll)="setNextDropdownValues($event, 5);" (onDeSelect)="setNextDropdownValues(null, 5);"
+                    [ngClass]="applicationForm.get('stage').invalid && applicationForm.get('stage').touched ? 'multiselect-invalid' : ''">
                   </ng-multiselect-dropdown>
                   <div class="invalid-multiselect-message"
-                       *ngIf="applicationForm.get('stage').invalid && applicationForm.get('stage').touched">
+                    *ngIf="applicationForm.get('stage').invalid && applicationForm.get('stage').touched">
                     Stage is required
                   </div>
                 </div>
                 <div class="form-group col-12">
                   <label>Display priority *</label>
                   <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Display priority'"
-                                           [settings]="singleSearchDropdownSettings" [data]="displayPriorityList"
-                                           formControlName="display_priority"
-                                           [ngClass]="applicationForm.get('display_priority').invalid ? 'multiselect-invalid' : ''">
+                    [settings]="singleSearchDropdownSettings" [data]="displayPriorityList"
+                    formControlName="display_priority"
+                    [ngClass]="applicationForm.get('display_priority').invalid ? 'multiselect-invalid' : ''">
                   </ng-multiselect-dropdown>
                   <div class="invalid-multiselect-message" *ngIf="applicationForm.get('display_priority').invalid">
                     Display priority is required
@@ -60,32 +56,64 @@
                 <div class="form-group col-12" *ngIf="levelOfClearanceIsVisible">
                   <label>Level of clearance *</label>
                   <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Level of clearance'"
-                                           [settings]="dropdownSettings" [data]="availableLevelOfClearanceList"
-                                           formControlName="level_of_clearance"
-                                           [ngClass]="{
+                    [settings]="dropdownSettings" [data]="availableLevelOfClearanceList"
+                    formControlName="level_of_clearance" [ngClass]="{
                       'multiselect-invalid': applicationForm.get('level_of_clearance').invalid && (applicationForm.get('level_of_clearance').touched || applicationForm.get('level_of_clearance').dirty)
                     }">
                   </ng-multiselect-dropdown>
                   <div class="invalid-multiselect-message"
-                       *ngIf="applicationForm.get('level_of_clearance').invalid && (applicationForm.get('level_of_clearance').touched || applicationForm.get('level_of_clearance').dirty)">
+                    *ngIf="applicationForm.get('level_of_clearance').invalid && (applicationForm.get('level_of_clearance').touched || applicationForm.get('level_of_clearance').dirty)">
                     Level of clearance is required
                   </div>
                 </div>
                 <div class="form-group col-12">
                   <label>Description *</label>
-                  <app-text-editor
-                    [control]="applicationForm.get('description')"
+                  <app-text-editor [control]="applicationForm.get('description')"
                     [ngClass]="applicationForm.get('description').invalid && applicationForm.get('description').touched ? 'editor-invalid' : ''">
                   </app-text-editor>
                   <div class="invalid-multiselect-message"
-                       *ngIf="applicationForm.get('description').invalid && applicationForm.get('description').touched">
+                    *ngIf="applicationForm.get('description').invalid && applicationForm.get('description').touched">
                     Description is required
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
+          <div class="row section">
+            <h5 class="col-12">Marketing Document</h5>
+            <div class="form-group col-sm-6 col-12">
+              <div class="array-fields">
+                <div class="array-fields-item" *ngFor="let collateralsItem of collateralsFieldList; let index = index">
+                  <div class="button-pdf-upload">
+                    <ng-container *ngIf="!collateralsItem?.url">
+                      <div class="file">
+                        <label class="add-file" [for]="'collaterals-' + index">
+                          <i class="fas fa-file-pdf"></i>
+                          <span>+ Add file</span>
+                        </label>
+                        <input [id]="'collaterals-' + index" type="file" accept="application/pdf"
+                          (change)="collateralsItem.url = $event.target.files[0]">
+                        <i class="fas fa-trash-alt" *ngIf="collateralsFieldList.length > 1"
+                          (click)="deleteField(selectFieldEnum.collaterals, collateralsItem)"></i>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="collateralsItem?.url">
+                      <div class="file">
+                        <a>{{collateralsItem?.url?.name ? collateralsItem?.url?.name :
+                          collateralsItem?.url.split('/').pop()}}</a>
+                        <i class="fas fa-trash-alt"
+                          (click)="deleteField(selectFieldEnum.collaterals, collateralsItem)"></i>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+                <div class="array-fields-actions">
+                  <button class="btn btn-plus" (click)="addField(selectFieldEnum.collaterals)"
+                    tooltip="+ Add collaterals item"><i class="fas fa-plus"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="row block-second">
             <div class="col-sm-8 col-12">
               <div class="row">
@@ -94,25 +122,21 @@
                   <div class="form-group">
                     <label>Family</label>
                     <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select family'"
-                                             [settings]="dropdownSettings" [data]="productFamily"
-                                             [(ngModel)]="productFamilySelected"
-                                             [ngModelOptions]="{standalone: true}" [required]='applicationRequired'
-                                             (onSelect)="setNextDropdownValues($event, 1); checkDropdownRequired(1)"
-                                             (onDeSelect)="setNextDropdownValues(null, 1); checkDropdownRequired(1)">
+                      [settings]="dropdownSettings" [data]="productFamily" [(ngModel)]="productFamilySelected"
+                      [ngModelOptions]="{standalone: true}" [required]='applicationRequired'
+                      (onSelect)="setNextDropdownValues($event, 1); checkDropdownRequired(1)"
+                      (onDeSelect)="setNextDropdownValues(null, 1); checkDropdownRequired(1)">
                     </ng-multiselect-dropdown>
                   </div>
                   <div class="form-group" [tooltip]="productFiltered.length === 0 ? 'Please select family first' : ''"
-                       placement="top">
+                    placement="top">
                     <label>Product *</label>
                     <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select product'"
-                                             [settings]="dropdownSettings" [data]="productFiltered"
-                                             [(ngModel)]="productFilteredSelected"
-                                             [ngModelOptions]="{standalone: true}" [required]='productRequired'
-                                             (onSelect)="checkDropdownRequired(1)"
-                                             (onSelectAll)="checkDropdownRequired(1)"
-                                             (onDeSelect)="checkDropdownRequired(1)"
-                                             [ngClass]="productRequired || !eventChangedProduct ? '' : 'multiselect-invalid'"
-                                             appDisableSelect>
+                      [settings]="dropdownSettings" [data]="productFiltered" [(ngModel)]="productFilteredSelected"
+                      [ngModelOptions]="{standalone: true}" [required]='productRequired'
+                      (onSelect)="checkDropdownRequired(1)" (onSelectAll)="checkDropdownRequired(1)"
+                      (onDeSelect)="checkDropdownRequired(1)"
+                      [ngClass]="productRequired || !eventChangedProduct ? '' : 'multiselect-invalid'" appDisableSelect>
                     </ng-multiselect-dropdown>
                     <div class="invalid-multiselect-message" *ngIf="!productRequired && eventChangedProduct">
                       Product is required
@@ -124,26 +148,23 @@
                   <div class="form-group">
                     <label>Packaging/Reel</label>
                     <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select packging/reel'"
-                                             [settings]="dropdownSettings" [data]="packagingList"
-                                             [(ngModel)]="packagingListSelected"
-                                             [ngModelOptions]="{standalone: true}" [required]='segmentRequired'
-                                             (onSelect)="setNextDropdownValues($event, 2); checkDropdownRequired(2)"
-                                             (onDeSelect)="setNextDropdownValues(null, 2);checkDropdownRequired(2)">
+                      [settings]="dropdownSettings" [data]="packagingList" [(ngModel)]="packagingListSelected"
+                      [ngModelOptions]="{standalone: true}" [required]='segmentRequired'
+                      (onSelect)="setNextDropdownValues($event, 2); checkDropdownRequired(2)"
+                      (onDeSelect)="setNextDropdownValues(null, 2);checkDropdownRequired(2)">
                     </ng-multiselect-dropdown>
                   </div>
                   <div class="form-group"
-                       [tooltip]="applicationList.length === 0 ? 'Please select packaging/reel first' : ''"
-                       placement="top">
+                    [tooltip]="applicationList.length === 0 ? 'Please select packaging/reel first' : ''"
+                    placement="top">
                     <label>Application *</label>
                     <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select application'"
-                                             [settings]="dropdownSettings" [data]="applicationList"
-                                             [(ngModel)]="applicationSelected"
-                                             [ngModelOptions]="{standalone: true}" [required]='applicationRequired'
-                                             (onSelect)="checkDropdownRequired(2)"
-                                             (onSelectAll)="checkDropdownRequired(2)"
-                                             (onDeSelect)="checkDropdownRequired(2)"
-                                             [ngClass]="applicationRequired || !eventChangedApplication ? '' : 'multiselect-invalid'"
-                                             appDisableSelect>
+                      [settings]="dropdownSettings" [data]="applicationList" [(ngModel)]="applicationSelected"
+                      [ngModelOptions]="{standalone: true}" [required]='applicationRequired'
+                      (onSelect)="checkDropdownRequired(2)" (onSelectAll)="checkDropdownRequired(2)"
+                      (onDeSelect)="checkDropdownRequired(2)"
+                      [ngClass]="applicationRequired || !eventChangedApplication ? '' : 'multiselect-invalid'"
+                      appDisableSelect>
                     </ng-multiselect-dropdown>
                     <div class="invalid-multiselect-message" *ngIf="!applicationRequired && eventChangedApplication">
                       Application is required
@@ -153,31 +174,26 @@
               </div>
               <div class="thickness form-group col-sm-12 col-12 p-0">
                 <label class="col-sm-7 p-0">Printing Method Available</label>
-                <div class="col-sm-7 pl-0"
-                     *ngFor="let printing of printingMethodAvailableFieldsList">
+                <div class="col-sm-7 pl-0" *ngFor="let printing of printingMethodAvailableFieldsList">
                   <div class="row m-0 col-12 p-0">
-                    <ng-multiselect-dropdown class="col-10 p-0"
-                                             [placeholder]=""
-                                             [settings]="getMultiDropdownSettings({textField: 'title'})"
-                                             [(ngModel)]="printing.values"
-                                             [ngModelOptions]="{standalone: true}"
-                                             [data]="printingAvailableMethodList">
+                    <ng-multiselect-dropdown class="col-10 p-0" [placeholder]=""
+                      [settings]="getMultiDropdownSettings({textField: 'title'})" [(ngModel)]="printing.values"
+                      [ngModelOptions]="{standalone: true}" [data]="printingAvailableMethodList">
                     </ng-multiselect-dropdown>
                     <app-stage-color-picker class="ml-1" [generalStage]="applicationForm.get('stage').value"
-                                            [stage]="printing.stage"
-                                            (changeStage)="printing.stage = $event">
+                      [stage]="printing.stage" (changeStage)="printing.stage = $event">
                     </app-stage-color-picker>
                   </div>
                   <div class="d-flex justify-content-end col-11 p-0 pr-2">
                     <button class="btn thickness-item-remove" *ngIf="printingMethodAvailableFieldsList.length > 1"
-                            (click)="deletePrintingField(printing)" tooltip="Remove territories field">Remove
+                      (click)="deletePrintingField(printing)" tooltip="Remove territories field">Remove
                     </button>
                   </div>
                 </div>
 
                 <div class="col-sm-6 d-flex justify-content-end">
                   <button class="p-0 btn btn-plus" (click)="addPrintingMethod()"
-                          tooltip="+ Add printing method available field">
+                    tooltip="+ Add printing method available field">
                     <i class="fas fa-plus"></i>
                   </button>
                 </div>
@@ -189,41 +205,37 @@
               <div class="form-group">
                 <label>Segment <span *ngIf="stageSelectedItems[0]?.id !== 4">*</span></label>
                 <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select segment'"
-                                         [settings]="multiDropdownSettings" [data]="segmentList"
-                                         [(ngModel)]="segmentSelected"
-                                         [ngModelOptions]="{standalone: true}" [required]='segmentRequired'
-                                         (onSelect)="setNextDropdownValues($event, 3); checkDropdownRequired(3); checkDropdownRequired(4);"
-                                         (onDeSelect)="setNextDropdownValues(null, 3); checkDropdownRequired(3); checkDropdownRequired(4);"
-                                         [ngClass]="segmentRequired || !eventChangedSegment ? '' : 'multiselect-invalid'">
+                  [settings]="multiDropdownSettings" [data]="segmentList" [(ngModel)]="segmentSelected"
+                  [ngModelOptions]="{standalone: true}" [required]='segmentRequired'
+                  (onSelect)="setNextDropdownValues($event, 3); checkDropdownRequired(3); checkDropdownRequired(4);"
+                  (onDeSelect)="setNextDropdownValues(null, 3); checkDropdownRequired(3); checkDropdownRequired(4);"
+                  [ngClass]="segmentRequired || !eventChangedSegment ? '' : 'multiselect-invalid'">
                 </ng-multiselect-dropdown>
                 <div class="invalid-multiselect-message" *ngIf="!segmentRequired && eventChangedSegment">
                   Segment is required
                 </div>
               </div>
               <div class="form-group" [tooltip]="segmentTypeList.length === 0 ? 'Please select segment first' : ''"
-                   placement="top">
+                placement="top">
                 <label>Segment type <span *ngIf="stageSelectedItems[0]?.id !== 4">*</span></label>
                 <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select segment type'"
-                                         [settings]="multiDropdownSettings" [data]="segmentTypeList"
-                                         [(ngModel)]="segmentTypeSelected"
-                                         [ngModelOptions]="{standalone: true}" [required]='segmentTypeRequired'
-                                         (onSelect)="setNextDropdownValues($event, 4); checkDropdownRequired(4);"
-                                         (onDeSelect)="setNextDropdownValues(null, 4); checkDropdownRequired(4)"
-                                         [ngClass]="segmentTypeRequired || !eventChangedSegmentType ? '' : 'multiselect-invalid'"
-                                         appDisableSelect>
+                  [settings]="multiDropdownSettings" [data]="segmentTypeList" [(ngModel)]="segmentTypeSelected"
+                  [ngModelOptions]="{standalone: true}" [required]='segmentTypeRequired'
+                  (onSelect)="setNextDropdownValues($event, 4); checkDropdownRequired(4);"
+                  (onDeSelect)="setNextDropdownValues(null, 4); checkDropdownRequired(4)"
+                  [ngClass]="segmentTypeRequired || !eventChangedSegmentType ? '' : 'multiselect-invalid'"
+                  appDisableSelect>
                 </ng-multiselect-dropdown>
                 <div class="invalid-multiselect-message" *ngIf="!segmentTypeRequired && eventChangedSegmentType">
                   Segment type is required
                 </div>
               </div>
               <div class="form-group" [tooltip]="packetGoodsList.length === 0 ? 'Please select segment type first' : ''"
-                   placement="top">
+                placement="top">
                 <label>Packed goods</label>
                 <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Select packet goods'"
-                                         [settings]="multiDropdownSettings" [data]="packetGoodsList"
-                                         [(ngModel)]="packetGoodsSelected"
-                                         [ngModelOptions]="{standalone: true}" [required]='segmentRequired'
-                                         appDisableSelect>
+                  [settings]="multiDropdownSettings" [data]="packetGoodsList" [(ngModel)]="packetGoodsSelected"
+                  [ngModelOptions]="{standalone: true}" [required]='segmentRequired' appDisableSelect>
                 </ng-multiselect-dropdown>
               </div>
             </div>
@@ -234,11 +246,8 @@
 
             <div class="form-group col-sm-6 col-12">
               <label>Partner Name</label>
-              <ng-multiselect-dropdown class="custom-multiselect" placeholder=""
-                                       [settings]="dropdownSettings"
-                                       [data]="partnersList"
-                                       formControlName="partner_name"
-                                       [ngClass]="{
+              <ng-multiselect-dropdown class="custom-multiselect" placeholder="" [settings]="dropdownSettings"
+                [data]="partnersList" formControlName="partner_name" [ngClass]="{
               'multiselect-invalid': applicationForm.get('partner_name').invalid && (applicationForm.get('partner_name').touched || applicationForm.get('partner_name').dirty)
             }">
               </ng-multiselect-dropdown>
@@ -262,27 +271,24 @@
               <div class="array-fields-item" *ngFor="let thickness of thicknessFieldList; let index = index">
                 <div class="item-field">
                   <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Thickness'"
-                                           [settings]="getMultiDropdownSettings({textField: 'value'})"
-                                           [ngModelOptions]="{standalone: true}"
-                                           [required]='thicknessRequiredField'
-                                           [data]="thicknessList" [(ngModel)]="thickness.values"
-                                           (onSelect)="setFieldStatus(selectFieldEnum.thickness)"
-                                           (onSelectAll)="setFieldStatus(selectFieldEnum.thickness)"
-                                           (onDeSelect)="deselectFieldForFastTrack(selectFieldEnum.thickness, $event, index)"
-                                           [ngClass]="stageSelectedItems[0]?.id !== 4 && !thicknessRequiredField || applicationForm.get('thickness').invalid && applicationForm.get('thickness').touched ? 'multiselect-invalid' : ''">
+                    [settings]="getMultiDropdownSettings({textField: 'value'})" [ngModelOptions]="{standalone: true}"
+                    [required]='thicknessRequiredField' [data]="thicknessList" [(ngModel)]="thickness.values"
+                    (onSelect)="setFieldStatus(selectFieldEnum.thickness)"
+                    (onSelectAll)="setFieldStatus(selectFieldEnum.thickness)"
+                    (onDeSelect)="deselectFieldForFastTrack(selectFieldEnum.thickness, $event, index)"
+                    [ngClass]="stageSelectedItems[0]?.id !== 4 && !thicknessRequiredField || applicationForm.get('thickness').invalid && applicationForm.get('thickness').touched ? 'multiselect-invalid' : ''">
                   </ng-multiselect-dropdown>
                   <app-stage-color-picker [generalStage]="applicationForm.get('stage').value" [stage]="thickness.stage"
-                                          (changeStage)="thickness.stage = $event; setFieldStatus(selectFieldEnum.thickness)"></app-stage-color-picker>
+                    (changeStage)="thickness.stage = $event; setFieldStatus(selectFieldEnum.thickness)"></app-stage-color-picker>
                 </div>
 
                 <div class="item-actions">
-                  <div class="invalid-multiselect-message"
-                       *ngIf="stageSelectedItems[0]?.id !== 4 && !thicknessRequiredField &&
+                  <div class="invalid-multiselect-message" *ngIf="stageSelectedItems[0]?.id !== 4 && !thicknessRequiredField &&
                        applicationForm.get('thickness').invalid && applicationForm.get('thickness').touched">
                     Thickness is required
                   </div>
                   <button class="btn item-remove" *ngIf="thicknessFieldList.length > 1"
-                          (click)="deleteField(selectFieldEnum.thickness, thickness)" tooltip="Remove thickness field">
+                    (click)="deleteField(selectFieldEnum.thickness, thickness)" tooltip="Remove thickness field">
                     Remove
                   </button>
                 </div>
@@ -290,7 +296,7 @@
 
               <div class="array-fields-actions">
                 <button class="btn btn-plus" (click)="addField(selectFieldEnum.thickness)"
-                        tooltip="+ Add thickness field"><i class="fas fa-plus"></i></button>
+                  tooltip="+ Add thickness field"><i class="fas fa-plus"></i></button>
               </div>
             </div>
             <div class="array-fields wrapper-stage form-group col-lg-4 col-sm-6 col-12">
@@ -299,32 +305,32 @@
                 <div class="width-height item-field">
                   <div>
                     <input type="number" class="form-control" placeholder="Min" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="width.min"
-                           (ngModelChange)="setFieldStatus(selectFieldEnum.width)"
-                           [ngClass]="applicationForm.get('width').touched && !getValidMinMax(width.min, width.max) ? 'is-invalid' : ''">
+                      [ngModelOptions]="{standalone: true}" [(ngModel)]="width.min"
+                      (ngModelChange)="setFieldStatus(selectFieldEnum.width)"
+                      [ngClass]="applicationForm.get('width').touched && !getValidMinMax(width.min, width.max) ? 'is-invalid' : ''">
                   </div>
                   <div>
                     <input type="number" class="form-control" placeholder="Max" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="width.max"
-                           (ngModelChange)="setFieldStatus(selectFieldEnum.width)"
-                           [ngClass]="applicationForm.get('width').touched && !getValidMinMax(width.min, width.max) ? 'is-invalid' : ''">
+                      [ngModelOptions]="{standalone: true}" [(ngModel)]="width.max"
+                      (ngModelChange)="setFieldStatus(selectFieldEnum.width)"
+                      [ngClass]="applicationForm.get('width').touched && !getValidMinMax(width.min, width.max) ? 'is-invalid' : ''">
                   </div>
                   <app-stage-color-picker [generalStage]="applicationForm.get('stage').value" [stage]="width.stage"
-                                          (changeStage)="width.stage = $event"></app-stage-color-picker>
+                    (changeStage)="width.stage = $event"></app-stage-color-picker>
                 </div>
                 <div class="item-actions">
                   <div class="invalid-multiselect-message"
-                       *ngIf="applicationForm.get('width').touched && !getValidMinMax(width.min, width.max)">
+                    *ngIf="applicationForm.get('width').touched && !getValidMinMax(width.min, width.max)">
                     Min and Max must be positive numbers or empty
                   </div>
                   <button class="btn item-remove" *ngIf="widthFieldList.length > 1"
-                          (click)="deleteField(selectFieldEnum.width, width)" tooltip="Remove width field">Remove
+                    (click)="deleteField(selectFieldEnum.width, width)" tooltip="Remove width field">Remove
                   </button>
                 </div>
               </div>
               <div class="array-fields-actions">
                 <button class="btn btn-plus" (click)="addField(selectFieldEnum.width)" tooltip="+ Add width field"><i
-                  class="fas fa-plus"></i></button>
+                    class="fas fa-plus"></i></button>
               </div>
             </div>
             <div class="array-fields wrapper-stage form-group col-lg-4 col-sm-6 col-12">
@@ -333,38 +339,38 @@
                 <div class="width-height item-field">
                   <div>
                     <input type="number" class="form-control" placeholder="Min" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="height.min"
-                           (ngModelChange)="setFieldStatus(selectFieldEnum.height)"
-                           [ngClass]="applicationForm.get('height').touched && !getValidMinMax(height.min, height.max) ? 'is-invalid' : ''">
+                      [ngModelOptions]="{standalone: true}" [(ngModel)]="height.min"
+                      (ngModelChange)="setFieldStatus(selectFieldEnum.height)"
+                      [ngClass]="applicationForm.get('height').touched && !getValidMinMax(height.min, height.max) ? 'is-invalid' : ''">
                   </div>
                   <div>
                     <input type="number" class="form-control" placeholder="Max" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="height.max"
-                           (ngModelChange)="setFieldStatus(selectFieldEnum.height)"
-                           [ngClass]="applicationForm.get('height').touched && !getValidMinMax(height.min, height.max) ? 'is-invalid' : ''">
+                      [ngModelOptions]="{standalone: true}" [(ngModel)]="height.max"
+                      (ngModelChange)="setFieldStatus(selectFieldEnum.height)"
+                      [ngClass]="applicationForm.get('height').touched && !getValidMinMax(height.min, height.max) ? 'is-invalid' : ''">
                   </div>
                   <app-stage-color-picker [generalStage]="applicationForm.get('stage').value" [stage]="height.stage"
-                                          (changeStage)="height.stage = $event"></app-stage-color-picker>
+                    (changeStage)="height.stage = $event"></app-stage-color-picker>
                 </div>
                 <div class="item-actions">
                   <div class="invalid-multiselect-message"
-                       *ngIf="applicationForm.get('height').touched && !getValidMinMax(height.min, height.max)">
+                    *ngIf="applicationForm.get('height').touched && !getValidMinMax(height.min, height.max)">
                     Min and Max must be positive numbers or empty
                   </div>
                   <button class="btn item-remove" *ngIf="heightFieldList.length > 1"
-                          (click)="deleteField(selectFieldEnum.height, height)" tooltip="Remove height field">Remove
+                    (click)="deleteField(selectFieldEnum.height, height)" tooltip="Remove height field">Remove
                   </button>
                 </div>
               </div>
               <div class="array-fields-actions">
                 <button class="btn btn-plus" (click)="addField(selectFieldEnum.height)" tooltip="+ Add height field"><i
-                  class="fas fa-plus"></i></button>
+                    class="fas fa-plus"></i></button>
               </div>
             </div>
             <div class="form-group col-lg-4 col-sm-6 col-12">
               <label>Features</label>
               <textarea type="text" class="form-control" placeholder="Enter features" formControlName="features"
-                        autosize></textarea>
+                autosize></textarea>
             </div>
             <div class="form-group col-lg-4 col-sm-6 col-12" formGroupName="technical_considerations">
               <label>Technical considerations</label>
@@ -377,11 +383,12 @@
                     <span>+ Add file</span>
                   </label>
                   <input id="consideration" type="file" accept="application/pdf"
-                         (change)="addDielineFile($event.target.files, 'technical_considerations')">
+                    (change)="addDielineFile($event.target.files, 'technical_considerations')">
                 </ng-container>
                 <ng-container *ngIf="getTechnicalConsiderationFile">
                   <div class="file">
-                    <a>{{getTechnicalConsiderationFile.name ? getTechnicalConsiderationFile.name : getTechnicalConsiderationFile.split('/').pop()}}</a>
+                    <a>{{getTechnicalConsiderationFile.name ? getTechnicalConsiderationFile.name :
+                      getTechnicalConsiderationFile.split('/').pop()}}</a>
                     <i class="fas fa-trash-alt" (click)="deleteDielineFile('technical_considerations')"></i>
                   </div>
                 </ng-container>
@@ -396,7 +403,7 @@
                     <span>+ Add file</span>
                   </label>
                   <input id="dieline" type="file" accept="application/pdf"
-                         (change)="addDielineFile($event.target.files, 'dieline')">
+                    (change)="addDielineFile($event.target.files, 'dieline')">
                 </ng-container>
                 <ng-container *ngIf="getDielineFile">
                   <div class="file">
@@ -408,45 +415,44 @@
             </div>
             <div class="form-group col-12">
               <label>Terms and Limitations</label>
-              <app-text-editor
-                [control]="applicationForm.get('terms_and_limitations')"
+              <app-text-editor [control]="applicationForm.get('terms_and_limitations')"
                 [ngClass]="applicationForm.get('terms_and_limitations').invalid && applicationForm.get('terms_and_limitations').touched ? 'editor-invalid' : ''">
               </app-text-editor>
               <div class="invalid-multiselect-message"
-                   *ngIf="applicationForm.get('terms_and_limitations').invalid && applicationForm.get('terms_and_limitations').touched">
+                *ngIf="applicationForm.get('terms_and_limitations').invalid && applicationForm.get('terms_and_limitations').touched">
                 Terms and Limitations is required
               </div>
             </div>
             <div class="array-fields form-group col-12">
               <label>Additional Features</label>
               <div class="array-fields-item"
-                   *ngFor="let additionalFeatures of additionalFeaturesFieldList; let index = index">
+                *ngFor="let additionalFeatures of additionalFeaturesFieldList; let index = index">
                 <div class="row">
                   <div class="col-6 wrapper-stage">
                     <div class="item-field">
                       <ng-multiselect-dropdown class="custom-multiselect" placeholder="Additional Features"
-                                               [settings]="getMultiDropdownSettings({textField: 'title'})"
-                                               [ngModelOptions]="{standalone: true}"
-                                               [data]="additionalFeaturesList" [(ngModel)]="additionalFeatures.ids"
-                                               (onSelect)="setFieldStatus(selectFieldEnum.additionalFeatures)"
-                                               (onSelectAll)="setFieldStatus(selectFieldEnum.additionalFeatures)"
-                                               (onDeSelect)="deselectFieldForFastTrack(selectFieldEnum.additionalFeatures, $event, index)">
+                        [settings]="getMultiDropdownSettings({textField: 'title'})"
+                        [ngModelOptions]="{standalone: true}" [data]="additionalFeaturesList"
+                        [(ngModel)]="additionalFeatures.ids"
+                        (onSelect)="setFieldStatus(selectFieldEnum.additionalFeatures)"
+                        (onSelectAll)="setFieldStatus(selectFieldEnum.additionalFeatures)"
+                        (onDeSelect)="deselectFieldForFastTrack(selectFieldEnum.additionalFeatures, $event, index)">
                       </ng-multiselect-dropdown>
                       <app-stage-color-picker [generalStage]="applicationForm.get('stage').value"
-                                              [stage]="additionalFeatures.stage"
-                                              (changeStage)="additionalFeatures.stage = $event; setFieldStatus(selectFieldEnum.additionalFeatures)"></app-stage-color-picker>
+                        [stage]="additionalFeatures.stage"
+                        (changeStage)="additionalFeatures.stage = $event; setFieldStatus(selectFieldEnum.additionalFeatures)"></app-stage-color-picker>
                     </div>
                     <div class="item-actions">
                       <button class="btn item-remove" *ngIf="additionalFeaturesFieldList.length > 1"
-                              (click)="deleteField(selectFieldEnum.additionalFeatures, additionalFeatures)"
-                              tooltip="Remove additional feature field">Remove
+                        (click)="deleteField(selectFieldEnum.additionalFeatures, additionalFeatures)"
+                        tooltip="Remove additional feature field">Remove
                       </button>
                     </div>
                   </div>
                   <div class="col-6">
                     <label class="checkbox-block">
-                      <input type="checkbox" class="form-control"
-                             [ngModelOptions]="{standalone: true}" [(ngModel)]="additionalFeatures.mandatory">
+                      <input type="checkbox" class="form-control" [ngModelOptions]="{standalone: true}"
+                        [(ngModel)]="additionalFeatures.mandatory">
                       Mandatory
                     </label>
                   </div>
@@ -456,7 +462,7 @@
                 <div class="col-6">
                   <div class="array-fields-actions">
                     <button class="btn btn-plus" (click)="addField(selectFieldEnum.additionalFeatures)"
-                            tooltip="+ Add additional feature field"><i class="fas fa-plus"></i></button>
+                      tooltip="+ Add additional feature field"><i class="fas fa-plus"></i></button>
                   </div>
                 </div>
               </div>
@@ -464,22 +470,22 @@
             <div class="form-group col-sm-6 col-12">
               <label>TIPA Production Site</label>
               <input type="text" class="form-control" placeholder="Enter production site"
-                     formControlName="tipa_production_site">
+                formControlName="tipa_production_site">
             </div>
             <div class="form-group col-sm-6 col-12">
               <label>Production Process</label>
               <input type="text" class="form-control" placeholder="Enter production process"
-                     formControlName="production_process">
+                formControlName="production_process">
             </div>
             <div class="form-group col-sm-6 col-12">
               <label>Positive experiments</label>
               <textarea type="text" class="form-control" placeholder="Enter experiments"
-                        formControlName="positive_experiments" autosize></textarea>
+                formControlName="positive_experiments" autosize></textarea>
             </div>
             <div class="form-group col-sm-6 col-12">
               <label>Negative feedback to be aware with</label>
               <textarea type="text" class="form-control" placeholder="Enter negative feedback"
-                        formControlName="negative_feedback_to_be_aware_of" autosize></textarea>
+                formControlName="negative_feedback_to_be_aware_of" autosize></textarea>
             </div>
           </div>
 
@@ -491,21 +497,20 @@
                 <div class="col-6 col-lg-4">
                   <div class="checkbox-title">
                     <input type="checkbox" class="form-control" [ngModelOptions]="{standalone: true}"
-                           [(ngModel)]="stream.checked">
+                      [(ngModel)]="stream.checked">
                     <span>{{stream.title}}</span>
                   </div>
                 </div>
                 <div class="col-6 col-lg-4">
-                  <div class="button-pdf-upload"
-                       [ngClass]="{'disabled': stream.site_url}"
-                       [tooltip]="stream.site_url ? 'The field is disabled, because there is a setted URL' : ''">
+                  <div class="button-pdf-upload" [ngClass]="{'disabled': stream.site_url}"
+                    [tooltip]="stream.site_url ? 'The field is disabled, because there is a setted URL' : ''">
                     <ng-container *ngIf="!stream.file_url">
                       <label [for]="'stream-' + stream.type">
                         <i class="fas fa-file-pdf"></i>
                         <span>+ Add file</span>
                       </label>
                       <input [id]="'stream-' + stream.type" type="file" accept="application/pdf"
-                             (change)="addStreamFile($event.target.files, stream)">
+                        (change)="addStreamFile($event.target.files, stream)">
                     </ng-container>
                     <ng-container *ngIf="stream.file_url">
                       <div class="file">
@@ -516,15 +521,48 @@
                   </div>
                 </div>
                 <div class="col-12 col-lg-4">
-                  <input type="text" class="form-control" placeholder="Set URL"
-                         [ngModelOptions]="{standalone: true}" [(ngModel)]="stream.site_url"
-                         [readOnly]="stream.file_url"
-                         [tooltip]="stream.file_url ? 'The field is disabled, because there is a uploaded PDF file' : ''">
+                  <input type="text" class="form-control" placeholder="Set URL" [ngModelOptions]="{standalone: true}"
+                    [(ngModel)]="stream.site_url" [readOnly]="stream.file_url"
+                    [tooltip]="stream.file_url ? 'The field is disabled, because there is a uploaded PDF file' : ''">
                 </div>
               </div>
             </div>
           </div>
-
+          <div class="row section">
+            <h5 class="col-12">Certifications</h5>
+            <div class="form-group col-sm-6 col-12">
+              <div class="array-fields">
+                <div class="array-fields-item" *ngFor="let collateralsItem of collateralsFieldList; let index = index">
+                  <div class="button-pdf-upload">
+                    <ng-container *ngIf="!collateralsItem?.url">
+                      <div class="file">
+                        <label class="add-file" [for]="'collaterals-' + index">
+                          <i class="fas fa-file-pdf"></i>
+                          <span>+ Add file</span>
+                        </label>
+                        <input [id]="'collaterals-' + index" type="file" accept="application/pdf"
+                          (change)="collateralsItem.url = $event.target.files[0]">
+                        <i class="fas fa-trash-alt" *ngIf="collateralsFieldList.length > 1"
+                          (click)="deleteField(selectFieldEnum.collaterals, collateralsItem)"></i>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="collateralsItem?.url">
+                      <div class="file">
+                        <a>{{collateralsItem?.url?.name ? collateralsItem?.url?.name :
+                          collateralsItem?.url.split('/').pop()}}</a>
+                        <i class="fas fa-trash-alt"
+                          (click)="deleteField(selectFieldEnum.collaterals, collateralsItem)"></i>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+                <div class="array-fields-actions">
+                  <button class="btn btn-plus" (click)="addField(selectFieldEnum.collaterals)"
+                    tooltip="+ Add collaterals item"><i class="fas fa-plus"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="row section">
             <h5 class="col-12">Compostability</h5>
 
@@ -541,7 +579,7 @@
               <div class="row certificate" *ngFor="let certificate of getIndustrialCertificates">
                 <div class="col-1">
                   <input type="checkbox" class="form-control" [ngModelOptions]="{standalone: true}"
-                         [(ngModel)]="certificate.checked">
+                    [(ngModel)]="certificate.checked">
                 </div>
                 <div class="col-lg-3 col-6">
                   <div class="certificate-img" *ngIf="certificate?.logo">
@@ -556,7 +594,7 @@
                   <div>
                     <label class="download-logo">
                       <input type="checkbox" class="form-control" [ngModelOptions]="{standalone: true}"
-                             [disabled]="certificate?.disabled" [(ngModel)]="certificate.download">
+                        [disabled]="certificate?.disabled" [(ngModel)]="certificate.download">
                       Allow downloading logo
                     </label>
                   </div>
@@ -574,7 +612,7 @@
               <div class="row certificate" *ngFor="let certificate of getHomeCertificates">
                 <div class="col-1">
                   <input type="checkbox" class="form-control" [ngModelOptions]="{standalone: true}"
-                         [(ngModel)]="certificate.checked">
+                    [(ngModel)]="certificate.checked">
                 </div>
                 <div class="col-lg-3 col-6">
                   <div class="certificate-img" *ngIf="certificate?.logo">
@@ -589,7 +627,7 @@
                   <div>
                     <label class="download-logo">
                       <input type="checkbox" class="form-control" [ngModelOptions]="{standalone: true}"
-                             [disabled]="certificate?.disabled" [(ngModel)]="certificate.download">
+                        [disabled]="certificate?.disabled" [(ngModel)]="certificate.download">
                       Allow downloading logo
                     </label>
                   </div>
@@ -607,29 +645,28 @@
 
             <div class="col-12">
               <div class="row" *ngFor="let certificateControl of getCertificatesArray.controls; let index = index"
-                   [formGroupName]="index">
+                [formGroupName]="index">
                 <div class="col">
                   <div class="row">
                     <div class="col-6 col-lg-4 form-group" *ngIf="certificateControl.get('certified_by')">
                       <label>Certified By</label>
                       <ng-multiselect-dropdown class="custom-multiselect" placeholder="Certified By"
-                                               [settings]="dropdownSettings" [data]="certifiedByList"
-                                               formControlName="certified_by">
+                        [settings]="dropdownSettings" [data]="certifiedByList" formControlName="certified_by">
                       </ng-multiselect-dropdown>
                     </div>
                     <div class="col-6 col-lg-4 form-group" *ngIf="certificateControl.get('certificate')"
-                         formGroupName="certificate">
+                      formGroupName="certificate">
                       <label>Certificate</label>
                       <ng-multiselect-dropdown class="custom-multiselect" placeholder="Certificate"
-                                               [settings]="dropdownSettings"
-                                               [data]="certificateControl.get('certificate')?.get('data_list')?.value || []"
-                                               formControlName="value_list">
+                        [settings]="dropdownSettings"
+                        [data]="certificateControl.get('certificate')?.get('data_list')?.value || []"
+                        formControlName="value_list">
                       </ng-multiselect-dropdown>
                     </div>
                     <div class="col-12 col-lg-4 align-self-center" *ngIf="certificateControl.get('download_graphics')">
                       <label class="d-flex align-items-center">
                         <input type="checkbox" class="custom-checkbox-xl form-control"
-                               formControlName="download_graphics">
+                          formControlName="download_graphics">
                         Allow downloading graphic files
                       </label>
                     </div>
@@ -640,8 +677,8 @@
                     <div class="col-6 col-lg-4 form-group" *ngIf="certificateControl.get('thickness')">
                       <label>Approved for thickness</label>
                       <ng-multiselect-dropdown class="custom-multiselect" placeholder="Thickness"
-                                               [settings]="multiDropdownSettings"
-                                               [data]="availableCertificateThicknessList" formControlName="thickness">
+                        [settings]="multiDropdownSettings" [data]="availableCertificateThicknessList"
+                        formControlName="thickness">
                       </ng-multiselect-dropdown>
                     </div>
                   </div>
@@ -664,7 +701,7 @@
           <div class="row block-fourth" formArrayName="available_marketing_samples">
             <h5 class="col-12">Available Marketing Samples</h5>
             <div class="col-12 customer" *ngFor="let ams of getAvailableMarketingSamples.controls; let i = index"
-                 [formGroupName]="i">
+              [formGroupName]="i">
               <div class="row">
                 <div class="col-lg-4 col-12 customer-image">
                   <app-edit-images
@@ -687,11 +724,11 @@
           <div class="row block-fourth" formArrayName="customers">
             <h5 class="col-12">Customers</h5>
             <div class="col-12 customer" *ngFor="let customer of getCustomers.controls; let i = index"
-                 [formGroupName]="i">
+              [formGroupName]="i">
               <div class="row">
                 <div class="col-lg-4 col-12 customer-image">
                   <app-edit-images [images]="formData && formData.customers[i] ? formData.customers[i].images : []"
-                                   (addFile)="addCustomerImageEvent($event, i)"></app-edit-images>
+                    (addFile)="addCustomerImageEvent($event, i)"></app-edit-images>
                 </div>
                 <div class="col-lg-8 col-12 customer-descr">
                   <div class="form-group">
@@ -707,8 +744,8 @@
           </div>
         </tab>
 
-        <tab *ngIf="showFastTrack" formGroupName="fast_track" heading="Add Fast Track application" customClass="custom-tab"
-             (selectTab)="selectTab($event, true)">
+        <tab *ngIf="showFastTrack" formGroupName="fast_track" heading="Add Fast Track application"
+          customClass="custom-tab" (selectTab)="selectTab($event, true)">
 
           <div class="row section">
             <div class="col-12 d-flex justify-content-end">
@@ -733,14 +770,14 @@
                     <div class="input-group-text"><b>FT</b></div>
                   </div>
                   <input type="text" class="form-control" placeholder="00" formControlName="application_number"
-                         (input)="onInputFTApplicationNumber($event)">
+                    (input)="onInputFTApplicationNumber($event)">
                 </div>
                 <div class="invalid-multiselect-message"
-                     *ngIf="applicationForm.get('fast_track').get('application_number').hasError('notFull')">Please use
+                  *ngIf="applicationForm.get('fast_track').get('application_number').hasError('notFull')">Please use
                   2 digits, such as: 02
                 </div>
                 <div class="invalid-multiselect-message"
-                     *ngIf="applicationForm.get('fast_track').get('application_number').hasError('notAvailable')">The
+                  *ngIf="applicationForm.get('fast_track').get('application_number').hasError('notAvailable')">The
                   number, you typed has already been taken
                 </div>
               </div>
@@ -756,12 +793,11 @@
                 <div class="array-fields-item" *ngFor="let thickness of ftThicknessFieldList">
                   <div class="item-field">
                     <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Thickness'"
-                                             [settings]="getMultiDropdownSettings({textField: 'value'})"
-                                             [ngModelOptions]="{standalone: true}"
-                                             [data]="thickness?.dataList" [(ngModel)]="thickness.values">
+                      [settings]="getMultiDropdownSettings({textField: 'value'})" [ngModelOptions]="{standalone: true}"
+                      [data]="thickness?.dataList" [(ngModel)]="thickness.values">
                     </ng-multiselect-dropdown>
                     <app-stage-color-picker *ngIf="thickness?.stage" [stage]="thickness.stage"
-                                            disabled="true"></app-stage-color-picker>
+                      disabled="true"></app-stage-color-picker>
                   </div>
                 </div>
               </div>
@@ -769,8 +805,8 @@
               <div class="form-group">
                 <label>Number of printing colors</label>
                 <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Number of printing colors'"
-                                         [settings]="getMultiDropdownSettings()" [data]="numberOfPrintingColorsList"
-                                         formControlName="number_of_printing_colors">
+                  [settings]="getMultiDropdownSettings()" [data]="numberOfPrintingColorsList"
+                  formControlName="number_of_printing_colors">
                 </ng-multiselect-dropdown>
               </div>
             </div>
@@ -783,19 +819,18 @@
                     <div class="col-6 wrapper-stage">
                       <div class="item-field">
                         <ng-multiselect-dropdown class="custom-multiselect" placeholder="Additional Features"
-                                                 [settings]="getMultiDropdownSettings({textField: 'title'})"
-                                                 [ngModelOptions]="{standalone: true}"
-                                                 [data]="additionalFeatures.dataList"
-                                                 [(ngModel)]="additionalFeatures.ids">
+                          [settings]="getMultiDropdownSettings({textField: 'title'})"
+                          [ngModelOptions]="{standalone: true}" [data]="additionalFeatures.dataList"
+                          [(ngModel)]="additionalFeatures.ids">
                         </ng-multiselect-dropdown>
                         <app-stage-color-picker *ngIf="additionalFeatures?.stage" [stage]="additionalFeatures.stage"
-                                                disabled="true"></app-stage-color-picker>
+                          disabled="true"></app-stage-color-picker>
                       </div>
                     </div>
                     <div class="col-6">
                       <label class="checkbox-block">
-                        <input type="checkbox" class="form-control"
-                               [ngModelOptions]="{standalone: true}" [(ngModel)]="additionalFeatures.mandatory">
+                        <input type="checkbox" class="form-control" [ngModelOptions]="{standalone: true}"
+                          [(ngModel)]="additionalFeatures.mandatory">
                         Mandatory
                       </label>
                     </div>
@@ -814,9 +849,9 @@
             <h5 class="col-12">Dimensions</h5>
 
             <div class="col-12 array-fields wrapper-stage form-group dimensions-dragDrop" cdkDropList
-                 (cdkDropListDropped)="dragDropFtDimensions($event)">
+              (cdkDropListDropped)="dragDropFtDimensions($event)">
               <div cdkDrag class="array-fields-item dragDrop-item"
-                   *ngFor="let dimension of ftDimensionsFieldList; let index = index">
+                *ngFor="let dimension of ftDimensionsFieldList; let index = index">
                 <div class="row">
                   <div cdkDragHandle class="col-2 col-sm-4 col-lg-1 dimensions-size">
                     <i class="fas fa-bars"></i>
@@ -825,22 +860,22 @@
                   <div class="col-10 col-sm-4 col-lg-2">
                     <label>Width (mm)</label>
                     <input type="number" class="form-control" placeholder="Width" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="dimension.width">
+                      [ngModelOptions]="{standalone: true}" [(ngModel)]="dimension.width">
                   </div>
                   <div class="col-12 col-sm-4 col-lg-2">
                     <label>Height (mm)</label>
                     <input type="number" class="form-control" placeholder="Height" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="dimension.height">
+                      [ngModelOptions]="{standalone: true}" [(ngModel)]="dimension.height">
                   </div>
                   <div class="col-12 col-sm-4 col-lg-2">
                     <label>Flap (mm)</label>
                     <input type="number" class="form-control" placeholder="Flap" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="dimension.flap">
+                      [ngModelOptions]="{standalone: true}" [(ngModel)]="dimension.flap">
                   </div>
                   <div class="col-12 col-sm-4 col-lg-2">
                     <label>Gusset (mm)</label>
                     <input type="number" class="form-control" placeholder="Gusset" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="dimension.gusset">
+                      [ngModelOptions]="{standalone: true}" [(ngModel)]="dimension.gusset">
                   </div>
                   <div class="col-12 col-sm-4 col-lg-3">
                     <label>Dieline</label>
@@ -851,11 +886,12 @@
                           <span>+ Add file</span>
                         </label>
                         <input [id]="'dimensionDieline-'+index" type="file" accept="application/pdf"
-                               (change)="dimension.dieline_url = $event.target.files[0]">
+                          (change)="dimension.dieline_url = $event.target.files[0]">
                       </ng-container>
                       <ng-container *ngIf="dimension?.dieline_url">
                         <div class="file">
-                          <a>{{dimension?.dieline_url?.name ? dimension?.dieline_url?.name : dimension?.dieline_url.split('/').pop()}}</a>
+                          <a>{{dimension?.dieline_url?.name ? dimension?.dieline_url?.name :
+                            dimension?.dieline_url.split('/').pop()}}</a>
                           <i class="fas fa-trash-alt" (click)="dimension.dieline_url = ''"></i>
                         </div>
                       </ng-container>
@@ -864,13 +900,13 @@
                 </div>
                 <div class="item-actions">
                   <button class="btn item-remove" *ngIf="ftDimensionsFieldList.length > 1"
-                          (click)="deleteField(selectFieldEnum.dimensions, dimension)" tooltip="Remove field">Remove
+                    (click)="deleteField(selectFieldEnum.dimensions, dimension)" tooltip="Remove field">Remove
                   </button>
                 </div>
               </div>
               <div class="array-fields-actions">
                 <button class="btn btn-plus" (click)="addField(selectFieldEnum.dimensions)" tooltip="+ Add field"><i
-                  class="fas fa-plus"></i></button>
+                    class="fas fa-plus"></i></button>
               </div>
             </div>
 
@@ -893,51 +929,51 @@
 
             <div class="col-12 overflow-auto">
               <div class="toggle-all-items" *ngIf="ftItemsListGrouped && ftItemsListGrouped.length"
-                   (click)="toggleAllFtItems()">Toggle All
+                (click)="toggleAllFtItems()">Toggle All
               </div>
 
               <table class="table table-items">
                 <thead>
-                <tr>
-                  <th scope="col">Show / Hide</th>
-                  <th scope="col">Fast Track Code</th>
-                  <th scope="col">Dimension</th>
-                  <th scope="col">Thickness</th>
-                  <th scope="col">Add MOQ</th>
-                </tr>
+                  <tr>
+                    <th scope="col">Show / Hide</th>
+                    <th scope="col">Fast Track Code</th>
+                    <th scope="col">Dimension</th>
+                    <th scope="col">Thickness</th>
+                    <th scope="col">Add MOQ</th>
+                  </tr>
                 </thead>
                 <tbody *ngIf="ftItemsListGrouped && ftItemsListGrouped.length">
-                <tr *ngFor="let item of ftItemsListGrouped">
-                  <td>
-                    <input type="checkbox" class="form-control visible-checkbox" [ngModelOptions]="{standalone: true}"
-                           [(ngModel)]="item.visible">
-                  </td>
-                  <td>
-                    <div class="short-code" (click)="item.isCollapsed = !item.isCollapsed">
-                      <i class="fas fa-angle-down" [ngClass]="{'rotate': item.isCollapsed}"></i>
-                      <span>{{item.shortCode}}</span>
-                    </div>
-                    <div class="code-list" [collapse]="!item.isCollapsed" [isAnimated]="true">
-                      <div *ngFor="let fullItem of item.fullItems">{{fullItem?.code}}</div>
-                    </div>
-                  </td>
-                  <td>
-                    <div>
-                      <span *ngIf="item?.dimension?.height">H:{{item?.dimension?.height}}</span>
-                      <span *ngIf="item?.dimension?.height && item?.dimension?.width"> x </span>
-                      <span *ngIf="item?.dimension?.width">W:{{item?.dimension?.width}}</span>
-                    </div>
-                    <div>
-                      <span *ngIf="item?.dimension?.flap">+ F:{{item?.dimension?.flap}}</span>
-                      <span *ngIf="item?.dimension?.gusset"> + G:{{item?.dimension?.gusset}}</span>
-                    </div>
-                  </td>
-                  <td>{{item.thickness}}</td>
-                  <td>
-                    <input type="number" class="form-control moq-input" placeholder="MOQ" min="0"
-                           [ngModelOptions]="{standalone: true}" [(ngModel)]="item.moq">
-                  </td>
-                </tr>
+                  <tr *ngFor="let item of ftItemsListGrouped">
+                    <td>
+                      <input type="checkbox" class="form-control visible-checkbox" [ngModelOptions]="{standalone: true}"
+                        [(ngModel)]="item.visible">
+                    </td>
+                    <td>
+                      <div class="short-code" (click)="item.isCollapsed = !item.isCollapsed">
+                        <i class="fas fa-angle-down" [ngClass]="{'rotate': item.isCollapsed}"></i>
+                        <span>{{item.shortCode}}</span>
+                      </div>
+                      <div class="code-list" [collapse]="!item.isCollapsed" [isAnimated]="true">
+                        <div *ngFor="let fullItem of item.fullItems">{{fullItem?.code}}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <span *ngIf="item?.dimension?.height">H:{{item?.dimension?.height}}</span>
+                        <span *ngIf="item?.dimension?.height && item?.dimension?.width"> x </span>
+                        <span *ngIf="item?.dimension?.width">W:{{item?.dimension?.width}}</span>
+                      </div>
+                      <div>
+                        <span *ngIf="item?.dimension?.flap">+ F:{{item?.dimension?.flap}}</span>
+                        <span *ngIf="item?.dimension?.gusset"> + G:{{item?.dimension?.gusset}}</span>
+                      </div>
+                    </td>
+                    <td>{{item.thickness}}</td>
+                    <td>
+                      <input type="number" class="form-control moq-input" placeholder="MOQ" min="0"
+                        [ngModelOptions]="{standalone: true}" [(ngModel)]="item.moq">
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -951,31 +987,31 @@
     <div>
       <ng-container *ngIf="isCreateModal">
         <button type="button" class="btn btn-info" (click)="addProduct(false)"
-                [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
+          [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
           Create and publish
         </button>
         <button type="button" class="btn btn-info" (click)="addProduct(true)"
-                [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
+          [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
           Create draft
         </button>
       </ng-container>
       <ng-container *ngIf="!isCreateModal && formData.draft">
         <button type="button" class="btn btn-info" (click)="addProduct(true)"
-                [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
+          [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
           Save
         </button>
         <button type="button" class="btn btn-info" (click)="addProduct(false)"
-                [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
+          [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
           Publish
         </button>
       </ng-container>
       <ng-container *ngIf="!isCreateModal && !formData.draft">
         <button type="button" class="btn btn-info" (click)="addProduct(false)"
-                [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
+          [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
           Save
         </button>
         <button type="button" class="btn btn-info" (click)="addProduct(true)"
-                [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
+          [disabled]="applicationForm.invalid || !productRequired || !applicationRequired || !segmentRequired || !segmentTypeRequired || !thicknessRequiredField">
           Save as draft
         </button>
       </ng-container>

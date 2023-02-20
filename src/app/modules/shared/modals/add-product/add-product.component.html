@@ -311,6 +311,37 @@
                                    formControlName="packed_goods">
           </ng-multiselect-dropdown>
         </div>
+        <div class="form-group col-sm-6 col-12">
+          <label>Sales Collaterals</label>
+          <div class="array-fields">
+            <div class="array-fields-item" *ngFor="let collateralsItem of collateralsFieldList; let index = index">
+              <div class="button-pdf-upload">
+                <ng-container *ngIf="!collateralsItem?.url">
+                  <div class="file">
+                    <label class="add-file" [for]="'collaterals-' + index">
+                      <i class="fas fa-file-pdf"></i>
+                      <span>+ Add file</span>
+                    </label>
+                    <input [id]="'collaterals-' + index" type="file" accept="application/pdf"
+                           (change)="collateralsItem.url = $event.target.files[0]">
+                    <i class="fas fa-trash-alt" *ngIf="collateralsFieldList.length > 1"
+                       (click)="deleteField(selectFieldEnum.collaterals, collateralsItem)"></i>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="collateralsItem?.url">
+                  <div class="file">
+                    <a>{{collateralsItem?.url?.name ? collateralsItem?.url?.name : collateralsItem?.url.split('/').pop()}}</a>
+                    <i class="fas fa-trash-alt" (click)="deleteField(selectFieldEnum.collaterals, collateralsItem)"></i>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+            <div class="array-fields-actions">
+              <button class="btn btn-plus" (click)="addField(selectFieldEnum.collaterals)" tooltip="+ Add collaterals item"><i
+                class="fas fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="row block-second">

@@ -235,6 +235,13 @@
                 <h5>Packed goods</h5>
                 <p>{{productInfo.packed_goods | getPacketGoods | async}}</p>
               </div>
+              <div class="col-md-6 col-12" *ngIf="productInfo.tds && productInfo.tds.length">
+                <h5>Sales Collaterals</h5>
+                <div class="pdf-file" *ngFor="let tdsItem of productInfo.tds">
+                  <i class="fas fa-file-pdf"></i>
+                  <a [href]="tdsItem?.url" target="_blank">{{tdsItem?.url.split('/').pop()}}</a>
+                </div>
+              </div>    
             </div>
           </div>
           <div class="col-12" id="regulation" *ngIf="getFoodCertificates.length > 0">

@@ -324,4 +324,22 @@ export class AppConstants {
       },
     ];
   }
+  public static get StreamList1(): StreamModel[] {
+    return [
+      {
+        type: this.StreamTypes.CUSTOM,
+        title: 'Custom',
+        file_url: null,
+        site_url: null,
+        checked: false,
+      },
+      {
+        type: this.StreamTypes.STOCK,
+        title: 'Stock',
+        file_url: null,
+        site_url: null,
+        checked: false,
+      },
+    ];
+  }
 }

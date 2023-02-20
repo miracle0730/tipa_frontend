@@ -6,6 +6,10 @@ import { FormGroup, FormBuilder, FormControl, Validators, FormControlName, FormA
 // Services
 import { QuoteRequestService, AlertService, MultiSelectService, ApplicationService, ProductService, CategoryService, } from '@services';
 
+// Store
+import { Store } from '@ngrx/store';
+import * as fromApp from '@store/app.reducer';
+
 // Interfaces
 import { CategoryModel, CertificateModel, ApplicationModel, RfqModel, RfqFormModel, ProductModel, RfqFormModelAdditionalFeaturesSection, ManufacturingTechniqueModel, FilmGradeModel, OpportunitySection, RfqFormModelAdditionalFeature, FeedbackSectionItem, PricingSectionItems, CofModel, StageItem, RfqFormModeModel, RfqShortItemModel, GraphicsSectionExternalLogo, RfqModelAdditionalFeaturesSection, AdditionalFeaturesModel, StageItemIdsModel, GetApplicationsParamsModel, GetProductsParamsModel, } from '@models';
 export interface PricingMeasureUnit {
@@ -334,7 +338,10 @@ export class QuoteRequestComponent implements OnInit, OnDestroy {
     metadata: {}
   };
 
+  public showFastTrack: boolean;
+
   constructor(
+    private store: Store<fromApp.AppState>,
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
@@ -449,6 +456,15 @@ export class QuoteRequestComponent implements OnInit, OnDestroy {
     }, (err) => {
       this.alertService.showError('');
     });
+
+    // get fast track status
+    this.store
+    .select('categories')
+    .subscribe((categoryState) => {
+      this.showFastTrack = categoryState.isShowFastTrack;
+      console.log("rfqqqqqqqq", this.showFastTrack);
+    });
+
 
     this.getSegmentSection.valueChanges
       .pipe(distinctUntilChanged((x, y) => JSON.stringify(x) === JSON.stringify(y)))
@@ -1006,7 +1022,7 @@ export class QuoteRequestComponent implements OnInit, OnDestroy {
       }
 
       if (!this.isRedirectedFromZoho || !this.opportunityId) {
-        this.navigateToMainPage();
+        // this.navigateToMainPage();
       }
 
       this.getOpportunity();
